@@ -1,0 +1,89 @@
+@import "tailwindcss";
+/*
+ * Tailwind's base, components, and utilities will be injected here.
+ * For this example, we'll focus on the custom glass and neon styles.
+ */
+
+
+/* Custom background for the entire page (inspired by terminal/code) */
+body {
+  background-color: #222246; /* Dark, deep blue/violet background */
+  color: #c5c5c5; /* Light grey text */
+  font-family: 'Inter', sans-serif; /* Recommended clean font */
+}
+
+/* 1. Neon Button Animation (for a glowing hover effect) */
+@keyframes neon-glow {
+  0%, 100% {
+    box-shadow: 0 0 5px #00e0ff, 0 0 15px #a020f0, 0 0 30px #00e0ff;
+  }
+  50% {
+    box-shadow: 0 0 10px #a020f0, 0 0 20px #00e0ff, 0 0 40px #a020f0;
+  }
+}
+
+/* 2. Glassmorphism Card Style */
+.glass-card {
+  /* Key glassmorphism properties */
+  background: rgba(30, 30, 45, 0.4); /* Dark translucent background */
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); /* Soft shadow */
+}
+
+/* Utility to apply the neon hover effect */
+.neon-button:hover {
+  animation: neon-glow 1s infinite alternate;
+}
+/* .dark {
+  background-color: #3976d1;
+
+  transition: background-color 0.4s ease, color 0.4s ease;
+  min-height: 100vh;
+} */
+
+.light-mode {
+  background-color: #ffffff;
+
+  transition: background-color 0.4s ease, color 0.4s ease;
+  min-height: 100vh;
+}
+.theme-toggle {
+  width: 50px;
+  height: 25px;
+  background: #a0a0a0;
+  border-radius: 25px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.4s ease;
+  border: none;
+}
+
+.circle {
+  width: 22px;
+  height: 22px;
+  background: white;
+  position: absolute;
+  top: 1.5px;
+  border-radius: 50%;
+  transition: all 0.4s ease;
+}
+
+.circle.dark {
+  left: 1.5px;
+  background: #fff;
+}
+
+.circle.light {
+  left: 26px;
+  background: #000;
+}
+
+
+
+
+
+
+
+
