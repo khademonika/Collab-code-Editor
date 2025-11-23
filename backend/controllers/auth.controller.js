@@ -1,17 +1,18 @@
 import User from "../model/user.model.js";
 import bcrypt from "bcrypt";
+import jwt from 'jsonwebtoken'
 
 export const signupController = async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
     // Validation
-    if (!username || !password) {
+    if (!email || !password) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
     // Check if user already exists
-    const existingUser = await User.findOne({ username });
+    const existingUser = await User.findOne({ email });
 
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
@@ -21,7 +22,7 @@ export const signupController = async (req, res) => {
     
     // Create new user
     const newUser = await User.create({
-      username,
+      email,
       password
     });
 
@@ -29,7 +30,7 @@ export const signupController = async (req, res) => {
       message: "User registered successfully",
       user: {
         id: newUser._id,
-        username: newUser.username,
+        email: newUser.email,
       },
     });
 
@@ -42,25 +43,30 @@ export const signupController = async (req, res) => {
 
 
 export const loginController = async (req, res) => {
-  const { username, password } = req.body;
+  const { email, password } = req.body;
 
   try {
     // 1. Check if user exists
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });
     }
-
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "7d"
+  });
 
     // 4. Send response
-    res.json({
-      message: "Login successful",
-   
-      user: {
-        id: user._id,
-        username: user.username
-      }
+    res
+    .cookie("token", token, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    })
+    .json({
+      success: true,
+      user,
+      message: "Login successful"
     });
 
   } catch (error) {
@@ -68,3 +74,29 @@ export const loginController = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
+
+export const logoutController = async (req, res) => {
+  try {
+    res.cookie("token", "", {
+      httpOnly: true,
+      expires: new Date(0), // delete cookie immediately
+      sameSite: "lax",
+      secure: false,
+    });
+
+    return res.json({ success: true, message: "Logged out successfully" });
+  } catch (error) {
+    console.log("Logout error:", error);
+    res.status(500).json({ success: false, message: "Failed to logout" });
+  }
+};
+
+export const meController = async (req,res)=>{
+   res.json({
+    success: true,
+    user: req.user
+  });
+}
+
+
+

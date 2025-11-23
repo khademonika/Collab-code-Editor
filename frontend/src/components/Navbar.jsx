@@ -1,9 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
 import { useTheme } from '../context/ThemeContext';
+import { useAuth } from '../context/AuthContext';
 
 const Navbar = () => {
   const { isDark, setIsDark } = useTheme();
+  const {logout, user} = useAuth()
 
   return (
     <nav className={`flex items-center justify-between px-8 py-6 max-w-7xl mx-auto`}>
@@ -20,17 +22,31 @@ const Navbar = () => {
           </button>
         </Link>
 
-        <Link to='/login'>
-          <button className={`text-lg font-medium transition-colors ${isDark ? 'text-white hover:text-blue-300' : 'text-gray-900 hover:text-blue-600'}`}>
-            Login
-          </button>
-        </Link>
+    {
         
-        <Link to='/createRoom'>
+        !user ? (
+          <Link to="/login">
+            <button className={`${isDark ? "text-white" : "text-black"}`}>
+              Login
+            </button>
+          </Link>
+        ) : (
+          <button 
+            onClick={logout}
+            className={`${isDark ? "text-white" : "text-black"}`}
+          >
+            Logout
+          </button>
+        )
+      
+        
+    }
+        
+        {/* <Link to='/createRoom'>
           <button className={`text-lg font-medium transition-colors ${isDark ? 'text-white hover:text-blue-300' : 'text-gray-900 hover:text-blue-600'}`}>
             Create 
           </button>
-        </Link>
+        </Link> */}
       </div>
 
       {/* Theme Toggle */}
