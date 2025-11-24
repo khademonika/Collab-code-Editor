@@ -8,7 +8,7 @@ const router = express.Router();
 router.post("/create-room", authMiddleware, createRoom);
 
 // Join room using code
-router.post("/join", authMiddleware, joinRoom);
+router.post("/join-room", authMiddleware, joinRoom);
 
 // Get all rooms where the user is a member
 router.get("/my-rooms", authMiddleware, getMyRooms);

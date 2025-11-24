@@ -83,14 +83,14 @@ const createRoom = async (roomName, description) => {
 
     const res = await axios.post(
       "/api/room/create-room",
-      { roomName, description },
+      { roomName, description , roomCode},
       {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       }
     );
-   window.location.href ="/room-page"
+   window.location.href ="/room/:id"
     return res.data.room;
   } catch (err) {
     console.error("Create Room Error:", err.response?.data || err.message);

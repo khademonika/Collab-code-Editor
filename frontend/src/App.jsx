@@ -10,6 +10,8 @@ import CreateRoomModal from './pages/CreateRoom'
 import {AuthProvider}  from './context/AuthContext'
 import ActiveRoom from './pages/ActiveRoom'
 import {RoomProvider} from './context/RoomContext'
+import RoomPage from './pages/Roompage'
+import JoinRoom from './pages/JoinRoom'
 
 const App = () => {
 const fetch = async()=> {
@@ -35,6 +37,8 @@ useEffect(() => {
    
      <Route path='/create-room' element={<CreateRoomModal/>}/>
     <Route path='/active-room' element={<ActiveRoom/>}/>
+    <Route path="/room/:roomId" element={<RoomPage />} />  
+    <Route path='/join-room' element={<JoinRoom/>}/>
 
   
    </Routes>

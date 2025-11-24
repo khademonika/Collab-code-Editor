@@ -10,9 +10,9 @@ const RoomPage = () => {
   const { roomId } = useParams();
   const { user } = useAuth();
 
-if (!user) {
-  return <div className="text-white p-4">Loading...</div>;
-}
+  if (!user) {
+    return <div className="text-white p-4">Loading...</div>;
+  }
   // const user = JSON.parse(localStorage.getItem("user"));
 
   const [code, setCode] = useState("");
@@ -66,13 +66,16 @@ if (!user) {
         <h2 className="text-xl font-bold mb-4">Online Users</h2>
 
         {onlineUsers.map((u) => (
-          <div
-            key={u.id}
-            className={`p-2 rounded mb-2 ${
-              editorUser?.id === u.id ? "bg-green-700" : "bg-gray-700"
-            }`}
-          >
-            {u.name} {editorUser?.id === u.id && " ✏️ (editing)"}
+
+          <div>
+            <h3>Online Users</h3>
+            <ul>
+              {onlineUsers.map(u => (
+                <li key={u.id}>
+                  {u.name} {editorUser?.id === u.id && "✏️ (editing)"}
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
 
