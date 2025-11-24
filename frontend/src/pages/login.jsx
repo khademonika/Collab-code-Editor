@@ -144,15 +144,26 @@ const LoginPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    try {
-      const url = isLogin ? "/api/auth/signup" : "/api/auth/login";
-      const { data } = await axios.post(url, user);
-      login(data.user, data.token);
-      window.location.href = "/create-room";
-    } catch (error) {
-      console.log(error.response?.data?.message || "Something went wrong");
-      setMessage(true)
-    }
+ try {
+  const url = !isLogin ? "/api/auth/login" : "/api/auth/signup";
+
+  // POST request with user data
+  const { data } = await axios.post(url, user);
+
+  // Save token AFTER getting response
+  localStorage.setItem("token", data.token);
+
+  // Update global login state
+  login(data.user, data.token);
+
+  // Redirect user
+  window.location.href = "/create-room";
+
+} catch (error) {
+  console.log(error.response?.data?.message || "Something went wrong");
+  setMessage(true);
+}
+
   };
 
   return (
@@ -213,15 +224,13 @@ const LoginPage = () => {
           {isLogin ? "Already have an account?" : "Don't have an account?"}
           <button
             className="text-violet-400 ml-1"
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => setIsLogin(isLogin)}
           >
             {isLogin ? "Login" : "Signup"}
           </button>
         </p>
       </div>
-      {message && (
-        <UserNotExist onClose={() => setMessage(false)} />
-      )}
+      {message && (<UserNotExist onClose={() => setMessage(false)} />)}
 
     </div>
   );
