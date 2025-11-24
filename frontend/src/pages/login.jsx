@@ -224,7 +224,7 @@ const LoginPage = () => {
           {isLogin ? "Already have an account?" : "Don't have an account?"}
           <button
             className="text-violet-400 ml-1"
-            onClick={() => setIsLogin(isLogin)}
+            onClick={() => setIsLogin(!isLogin)}
           >
             {isLogin ? "Login" : "Signup"}
           </button>

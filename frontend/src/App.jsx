@@ -9,23 +9,25 @@ import About from './pages/About'
 import CreateRoomModal from './pages/CreateRoom'
 import {AuthProvider}  from './context/AuthContext'
 import ActiveRoom from './pages/ActiveRoom'
-import RoomProvider from './context/RoomContext'
+import {RoomProvider} from './context/RoomContext'
 
 const App = () => {
-  const fetch = async()=>{
-    const data = await axios.get("/api/auth")
-    console.log(data);
-    
-  }
-useEffect(()=>{
-  fetch()
-},[])
+const fetch = async()=> {
+  const data = await axios.get("/api/auth")
+  console.log(data);
+};
+
+useEffect(() => {
+  fetch();
+}, []);
+
   return (
     <ThemeProvider>
       <AuthProvider>
+         <RoomProvider>
    <BrowserRouter>
    <Navbar/>
-   <RoomProvider>
+  
    <Routes>
     <Route path="/" element={<Home />}/>
     <Route path='/login' element={<LoginPage />}/>
@@ -36,13 +38,12 @@ useEffect(()=>{
 
   
    </Routes>
-    </RoomProvider>
+ 
    </BrowserRouter>
+      </RoomProvider>
    </AuthProvider>
    </ThemeProvider>
   )
 }
 
 export default App
-// monikakhade@gmail.com
-// 123456

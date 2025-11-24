@@ -1,7 +1,7 @@
 {
   "name": "frontend",
   "private": true,
-  "proxy":"http://127.0.0.1:5000",
+  "proxy": "http://127.0.0.1:5000",
   "version": "0.0.0",
   "type": "module",
   "scripts": {
@@ -11,12 +11,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@monaco-editor/react": "^4.7.0",
     "@tailwindcss/vite": "^4.1.17",
     "axios": "^1.13.2",
     "lucide-react": "^0.554.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.6",
+    "socket.io-client": "^4.8.1",
     "tailwindcss": "^4.1.17"
   },
   "devDependencies": {

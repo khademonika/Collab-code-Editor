@@ -1,8 +1,23 @@
 import React from "react";
+import ProtectedRoute from "../components/ProtectedRoute";
+import { useContext } from "react";
+import { RoomContext } from "../context/RoomContext";
+import { useState } from "react";
 
 const CreateRoom = () => {
+    const { createRoom } = useContext(RoomContext);
+  const [roomName, setRoomName] = useState("");
+  const [description, setDescription] = useState("");
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await createRoom(roomName, description);
+    alert("Room Created!");
+  };
+
   return (
-    <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
+   <ProtectedRoute>
+ <div className="min-h-screen flex justify-center items-center bg-gray-100 px-4">
       <div className="bg-white shadow-xl rounded-3xl p-8 w-full max-w-md">
         <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
           Create a Room
@@ -23,7 +38,9 @@ const CreateRoom = () => {
         </div>
 
         <div className="flex justify-between mt-6">
-          <button className="px-5 py-2 bg-green-500 text-white rounded-xl shadow hover:bg-green-600 transition">
+          <button
+          onClick={(e)=>handleSubmit(e)}
+           className="px-5 py-2 bg-green-500 text-white rounded-xl shadow hover:bg-green-600 transition">
             Create Room
           </button>
 
@@ -33,7 +50,32 @@ const CreateRoom = () => {
         </div>
       </div>
     </div>
+
+   </ProtectedRoute>
   );
 };
 
 export default CreateRoom;
+// import { useContext, useState } from "react";
+// import {RoomContext}  from "../context/RoomContext";
+// import React from "react";
+// export default function CreateRoom() {
+//   const { createRoom } = useContext(RoomContext);
+//   const [roomName, setRoomName] = useState("");
+//   const [description, setDescription] = useState("");
+  
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     await createRoom(roomName, description);
+//     alert("Room Created!");
+//   };
+
+//   return (
+//     <form onSubmit={handleSubmit}>
+//       <h2>Create Room</h2>
+//       <input value={roomName} onChange={(e) => setRoomName(e.target.value)} placeholder="Room Name" />
+//       <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Description" />
+//       <button type="submit">Create</button>
+//     </form>
+//   );
+// }
