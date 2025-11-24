@@ -1,41 +1,41 @@
 import mongoose from "mongoose";
 
-const roomSchema = new mongoose.Schema(
-  {
-    roomName: {
-      type: String,
+// const roomSchema = new mongoose.Schema(
+//   {
+//     roomName: {
+//       type: String,
     
-      trim: true,
-    },
+//       trim: true,
+//     },
 
-    description: {
-      type: String,
+//     description: {
+//       type: String,
     
-    },
+//     },
 
-    roomCode: {
-      type: String,
+//     roomCode: {
+//       type: String,
      
-      unique: true,
-    },
+//       unique: true,
+//     },
 
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+//     createdBy: {
+//       type: mongoose.Schema.Types.ObjectId,
+//       ref: "User",
+//       required: true,
+//     },
 
-    members: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      }
-    ]
-  },
-  {
-    timestamps: true,
-  }
-);
+//     members: [
+//       {
+//         type: mongoose.Schema.Types.ObjectId,
+//         ref: "User",
+//       }
+//     ]
+//   },
+//   {
+//     timestamps: true,
+//   }
+// );
 
 // Auto-generate roomCode if not provided
 // roomSchema.pre("save", function (next) {
@@ -45,6 +45,26 @@ const roomSchema = new mongoose.Schema(
 //   }
 //   next();
 // });
+
+const roomSchema = new mongoose.Schema({
+  roomName: String,
+  description: String,
+  roomCode: {
+    type: String,
+    unique: true
+  },
+  createdBy: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
+  members: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
+    }
+  ]
+}, { timestamps: true });
+
 
 const Room = mongoose.model("Room", roomSchema);
 

@@ -90,7 +90,7 @@ const createRoom = async (roomName, description) => {
         },
       }
     );
-
+   window.location.href ="/room-page"
     return res.data.room;
   } catch (err) {
     console.error("Create Room Error:", err.response?.data || err.message);
