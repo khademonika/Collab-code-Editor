@@ -119,6 +119,7 @@ const Navbar = () => {
             <Link to="/" className="text-2xl font-extrabold tracking-wide">
               CollabIDE
             </Link>
+   
           </div>
 
           {/* Desktop Links */}
@@ -167,6 +168,7 @@ const Navbar = () => {
                 >
                   Logout
                 </button>
+                <Link to="/active-room"><p>active room</p></Link>
               </div>
             )}
 
