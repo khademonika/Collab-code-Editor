@@ -371,7 +371,8 @@ const RoomPage = () => {
   const { roomId } = useParams();
   const { user } = useAuth();
 
-  const [socket, setSocket] = useState(null);
+  // const [socket, setSocket] = useState(null);
+  const socketRef = React.useRef(null);
   const [code, setCode] = useState("");
   const [onlineUsers, setOnlineUsers] = useState([]);
   const [editorUser, setEditorUser] = useState(null);
@@ -401,49 +402,84 @@ const RoomPage = () => {
     css: 79
   };
 
-  useEffect(() => {
-    if (!user) return;
+  // useEffect(() => {
+  //   if (!user) return;
 
-    const newSocket = io("http://localhost:5000", {
+  //   const newSocket = io("http://localhost:5000", {
+  //     transports: ["websocket"],
+  //     forceNew: true,
+  //   });
+
+  //   setSocket(newSocket);
+  //   newSocket.emit("join-room", { roomId, user });
+
+  //   newSocket.on("online-users", (users) => {
+  //     console.log("Users:", users);
+  //     setOnlineUsers(users);
+  //   });
+
+  //   newSocket.on("update-code", (updatedCode) => {
+  //     setCode(updatedCode);
+  //   });
+
+  //   newSocket.on("editor-updated", (newEditor) => {
+  //     setEditorUser(newEditor);
+  //   });
+
+  //   return () => {
+  //     newSocket.emit("release-editor", { roomId });
+  //     newSocket.disconnect();
+  //   };
+  // }, [roomId, user]);
+useEffect(() => {
+  if (!user) return;
+
+  if (!socketRef.current) {
+    socketRef.current = io("http://localhost:5000", {
       transports: ["websocket"],
       forceNew: true,
     });
+  }
 
-    setSocket(newSocket);
-    newSocket.emit("join-room", { roomId, user });
+  const s = socketRef.current;
 
-    newSocket.on("online-users", (users) => {
-      console.log("Users:", users);
-      setOnlineUsers(users);
-    });
+  s.emit("join-room", { roomId, user });
 
-    newSocket.on("update-code", (updatedCode) => {
-      setCode(updatedCode);
-    });
+  s.on("online-users", (users) => {
+    console.log("Online Users:", users);
+    setOnlineUsers(users);
+  });
 
-    newSocket.on("editor-updated", (newEditor) => {
-      setEditorUser(newEditor);
-    });
-
-    return () => {
-      newSocket.emit("release-editor", { roomId });
-      newSocket.disconnect();
-    };
-  }, [roomId, user]);
+  s.on("update-code", (updatedCode) => {
+    setCode(updatedCode);
+  });
+s.on("editor-updated", (newEditor) => {
+    setEditorUser(newEditor);
+  });
+  s.on("edit-denied", (currentEditor) => {
+      alert(`Edit access denied. ${currentEditor.name} is currently editing.`);
+  });
+  return () => {
+    s.emit("release-editor", { roomId });
+    // s.disconnect();
+  };
+}, [roomId, user]);
 
   const handleCodeChange = (value) => {
     if (!isEditor) return;
     setCode(value);
     localStorage.setItem(`code_${roomId}`, value);
-    if (socket) socket.emit("code-change", { roomId, code: value });
+    // if (socketRef) socketRef.emit("code-change", { roomId, code: value });
+    if (socketRef.current) socketRef.current.emit("code-change", { roomId, code: value });
+
   };
 
   const requestEditAccess = () => {
-    if (socket) socket.emit("request-edit", { roomId, user });
+    if (socketRef.current) socketRef.current.emit("request-edit", { roomId, user });
   };
 
   const stopEditing = () => {
-    if (socket) socket.emit("release-editor", { roomId });
+    if (socketRef) socketRef.current.emit("release-editor", { roomId });
   };
 
   const runCode = async () => {

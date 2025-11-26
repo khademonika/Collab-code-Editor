@@ -91,6 +91,7 @@ import { Code2, Menu, X, Sun, Moon } from "lucide-react";
 
 const Navbar = () => {
   const { isDark, setIsDark } = useTheme();
+   const { theme, toggleTheme } = useTheme();
   const { logout, user } = useAuth();
   const navigate = useNavigate();
 
@@ -170,12 +171,22 @@ const Navbar = () => {
             )}
 
             {/* Theme Toggle */}
-            <button
+            {/* <button
               onClick={() => setIsDark(!isDark)}
               className="ml-4 p-2 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition"
             >
               {isDark ? <Sun size={22} /> : <Moon size={22} />}
-            </button>
+            </button> */}
+             <button
+        onClick={toggleTheme}
+        className="p-2 rounded-full bg-gray-200 dark:bg-gray-800"
+      >
+        {theme === "dark" ? (
+          <Sun className="text-yellow-300" />
+        ) : (
+          <Moon className="text-black" />
+        )}
+      </button>
           </div>
 
           {/* Mobile Menu Button */}

@@ -43,7 +43,7 @@ const io = new Server(server, {
   }
 });
 const rooms = {}
-let onlineUsers = new Map();
+// let onlineUsers = new Map();
 // io.on("connection", (socket) => {
 //   console.log("User connected:", socket.id);
 
@@ -51,16 +51,15 @@ let onlineUsers = new Map();
 
 
 //   // REQUEST EDITOR PERMISSION
-//   socket.on("request-edit", ({ roomId, user }) => {
-//     if (!roomEditors[roomId]) {
-//       roomEditors[roomId] = user;
+io.on("request-edit", ({ roomId, user }) => {
+  if (!rooms[roomId].editor) {
+    rooms[roomId].editor = user;
+    io.to(roomId).emit("editor-updated", user);
+  } else {
+    socket.emit("edit-denied", rooms[roomId].editor);
+  }
+});
 
-//       io.to(roomId).emit("editor-updated", roomEditors[roomId]);
-//     }
-//     else {
-//       socket.emit("edit-denied", roomEditors[roomId]);
-//     }
-//   });
 
 //   // CODE CHANGE
 //   socket.on("code-change", ({ roomId, code }) => {
@@ -69,10 +68,7 @@ let onlineUsers = new Map();
 //   });
 
 //   // RELEASE EDITOR
-//   socket.on("release-editor", ({ roomId }) => {
-//     roomEditors[roomId] = null;
-//     io.to(roomId).emit("editor-updated", null);
-//   });
+
 
 //   // DISCONNECT
 //   socket.on("disconnect", () => {
@@ -86,28 +82,30 @@ let onlineUsers = new Map();
 //   });
 // });
 io.on("connection", (socket) => {
-  socket.on("join-room", ({ roomId, user }) => {
+  // socket.on("join-room", ({ roomId, user }) => {
 
-    socket.join(roomId);
-    socket.roomId = roomId;
-    socket.userId = user.id;
-    socket.userId = user.id;
-    if (!rooms[roomId]) rooms[roomId] = { users: [] , code: "" };
+  //   socket.join(roomId);
+  //   socket.roomId = roomId;
+  //   socket.userId = user.id;
+  //   if (!rooms[roomId]) rooms[roomId] = { users: [], code: "" };
 
-    // Remove old duplicates
-    rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== user.id);
+  //   // Remove old duplicates
+  //   rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== user.id);
 
-    // Add fresh user object
-    rooms[roomId].users.push({
-      id: user.id,
-      name: user.username
-    });
+  //   // Add fresh user object
+  //   rooms[roomId].users.push({
+  //     // id: user.id,
+  //     // name: user.username
+  //     socket: socket.id,       // unique per browser
+  //     id: user.id,             // optional
+  //     name: user.username
+  //   });
 
-    io.to(roomId).emit("online-users", rooms[roomId].users);
-    // Load existing code only for this room
-      socket.emit("update-code", rooms[roomId].code);
-  });
-    socket.on("code-change", ({ roomId, code }) => {
+  //   io.to(roomId).emit("online-users", rooms[roomId].users);
+  //   // Load existing code only for this room
+  //   socket.emit("update-code", rooms[roomId].code);
+  // });
+  socket.on("code-change", ({ roomId, code }) => {
     rooms[roomId].code = code;
     socket.to(roomId).emit("update-code", code);
   });
@@ -125,15 +123,84 @@ io.on("connection", (socket) => {
   //   // Send updated user list
   //   io.to(roomId).emit("online-users", roomUsers[roomId]);
   // });
-  socket.on("disconnect", () => {
+  // socket.on("disconnect", () => {
+  //   const roomId = socket.roomId;
+  //   const userId = socket.userId;
+
+  //   if (roomId && rooms[roomId]) {
+  //     rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== userId);
+  //     io.to(roomId).emit("online-users", rooms[roomId].users);
+  //   }
+  // });
+  // Replace your current disconnect logic with this:
+socket.on("disconnect", () => {
     const roomId = socket.roomId;
-    const userId = socket.userId;
+    const socketId = socket.id; // Use the socket ID for removal
 
     if (roomId && rooms[roomId]) {
-      rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== userId);
+      // Filter out the user object that has the disconnecting socket's ID
+      rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socketId);
+      
+      // If the editor disconnects, release the editor access
+      if (roomEditors[roomId] && roomEditors[roomId].socket === socketId) {
+          roomEditors[roomId] = null;
+          io.to(roomId).emit("editor-updated", null);
+      }
+      
+      // Emit the updated list to all remaining users in the room
       io.to(roomId).emit("online-users", rooms[roomId].users);
     }
-  });
+});
+
+// Update the join-room logic to use socket ID for identification:
+socket.on("join-room", ({ roomId, user }) => {
+    socket.join(roomId);
+    socket.roomId = roomId;
+    socket.userId = user.id; // Keep userId for optional tracking
+
+    if (!rooms[roomId]) rooms[roomId] = { users: [], code: "" };
+    if (!roomEditors[roomId]) roomEditors[roomId] = null; // Initialize editor tracking
+
+    // Filter out previous connection attempts from the *same socket* or other users with the *same user id*
+    // It's safer to filter by socket ID if you want multiple tabs for the same user name to be counted
+    rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socket.id);
+    
+    // Add fresh user object
+    rooms[roomId].users.push({
+      socket: socket.id, 
+      id: user.id, 
+      name: user.username
+    });
+
+    // Send the current editor status
+    socket.emit("editor-updated", roomEditors[roomId]);
+    
+    io.to(roomId).emit("online-users", rooms[roomId].users);
+    
+    // Load existing code only for this new socket
+    socket.emit("update-code", rooms[roomId].code);
+});
+socket.on("request-edit", ({ roomId, user }) => {
+      // Use roomEditors for tracking editor as in your commented out code
+      if (!roomEditors[roomId]) {
+        roomEditors[roomId] = user;
+        io.to(roomId).emit("editor-updated", user);
+      } else {
+        // rooms[roomId].editor is not defined in your storage, use roomEditors
+        socket.emit("edit-denied", roomEditors[roomId]);
+      }
+    });
+
+    socket.on("code-change", ({ roomId, code }) => {
+      rooms[roomId].code = code;
+      // Send code change to all **other** sockets in the room
+      socket.to(roomId).emit("update-code", code);
+    });
+
+    socket.on("release-editor", ({ roomId }) => {
+      roomEditors[roomId] = null;
+      io.to(roomId).emit("editor-updated", null);
+    });
 });
 
 
