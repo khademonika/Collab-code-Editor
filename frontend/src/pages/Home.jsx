@@ -112,7 +112,7 @@
    
   //   </div>
  
-import { Code2, Play, Menu, Star, Users, Zap,ArrowRight,ChevronDown, Globe } from 'lucide-react';
+import { Code2, Play, Menu, Star, Users, Zap,ArrowRight,ChevronDown, Globe, ChevronUp } from 'lucide-react';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
@@ -142,6 +142,9 @@ const {isLogin} = useAuth()
     },
   ];
   
+  const toggleFaq = (id) => {
+    setOpenFaqId(openFaqId === id ? null : id);
+  };
   const faqs = [
     {
       id: "security",
