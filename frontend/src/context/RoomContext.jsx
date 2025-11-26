@@ -77,7 +77,7 @@ export const RoomProvider = ({ children }) => {
 //   }
 // }, []);
 
-const createRoom = async (roomName, description) => {
+const createRoom = async (roomName, description,roomCode) => {
   try {
     console.log("Using token:", token);
 
@@ -90,8 +90,9 @@ const createRoom = async (roomName, description) => {
         },
       }
     );
-   window.location.href ="/room/:id"
-    return res.data.room;
+  //  window.location.href =`/room/${res.data.roomId}`
+
+    return res.data
   } catch (err) {
     console.error("Create Room Error:", err.response?.data || err.message);
     throw err;

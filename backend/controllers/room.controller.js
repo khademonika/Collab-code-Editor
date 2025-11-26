@@ -21,7 +21,7 @@ export const createRoom = async (req, res) => {
       members: [userId],
     });
 
-    res.status(201).json({ message: "Room created", room });
+    res.status(201).json({ message: "Room created", room ,roomId: room._id });
   } catch (error) {
     console.log("Create room error:", error);
     res.status(500).json({ message: "Server error" });

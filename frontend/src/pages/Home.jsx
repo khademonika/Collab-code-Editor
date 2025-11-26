@@ -112,12 +112,14 @@
    
   //   </div>
  
-import { Code2, Play, Menu, Star, Users, Zap,ArrowRight, ChevronRight,ChevronDown, Globe } from 'lucide-react';
+import { Code2, Play, Menu, Star, Users, Zap,ArrowRight,ChevronDown, Globe } from 'lucide-react';
 import React, { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
+import { Link } from 'react-router-dom';
 export default function CollabIDELanding() {
     const [activeRoom, setActiveRoom] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
-
+const {isLogin} = useAuth()
   
     const rooms = [
     {
@@ -225,7 +227,9 @@ export default function CollabIDELanding() {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
           <button className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
-            Start Coding Free →
+            {
+              !isLogin ? (<Link to="/create-room">Create a room</Link>) :"Start coding free"
+            }
           </button>
           <button className="px-8 py-4 bg-blue-900/30 hover:bg-blue-900/50 border border-blue-500/30 rounded-lg font-semibold text-lg transition-all flex items-center gap-2">
             <Play className="w-5 h-5" />

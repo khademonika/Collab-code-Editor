@@ -5,9 +5,9 @@ import dotenv from "dotenv"
 dotenv.config()
 export const signupController = async (req, res) => {
   try {
-    const { email, password } = req.body;
+    const { email, password,username } = req.body;
 
-    if (!email || !password) {
+    if (!email || !password|| !username) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -17,7 +17,7 @@ export const signupController = async (req, res) => {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = await User.create({ email, password });
+    const newUser = await User.create({ email, password, username });
 
     // ----- CREATE TOKEN -----
     const token = jwt.sign(
@@ -32,16 +32,19 @@ export const signupController = async (req, res) => {
       user: {
         id: newUser._id,
         email: newUser.email,
+        username:newUser.username
       },
     });
 
 
   } catch (error) {
+    console.log(error.message);
+    
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
-
+// N1JCKJ
 
 // export const loginController = async (req, res) => {
 //   const { email, password } = req.body;
@@ -76,11 +79,11 @@ export const signupController = async (req, res) => {
 //   }
 // };
 export const loginController = async (req, res) => {
-  const { email, password } = req.body;
+  const { email, password,username } = req.body;
 
   try {
     // 1. Check if user exists
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ username });
 
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });

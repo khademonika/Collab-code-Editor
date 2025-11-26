@@ -2,13 +2,16 @@
 import React, { useContext, useState } from "react";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { RoomContext } from "../context/RoomContext";
+import { useNavigate } from "react-router-dom";
+import Alert from "../components/Alert";
 
 const CreateRoom = () => {
   const { createRoom } = useContext(RoomContext);
-
+const [alert, setAlert] = useState(null);
   const [roomName, setRoomName] = useState("");
   const [description, setDescription] = useState("");
   const [roomCode, setRoomCode] = useState("");
+const navigate = useNavigate();
 
   // Generate Room Code
   const generateRoomCode = () => {
@@ -16,20 +19,45 @@ const CreateRoom = () => {
     setRoomCode(code);
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-const room = await createRoom(roomName, description,roomCode);
-    if (!roomCode) {
-      alert("Please generate a Room Code before creating room");
-      return;
-    }
- if (room) {
-      setRoomCode(room.roomCode);
-      alert("Room created successfully!");
-    }
-    await createRoom(roomName, description, roomCode);
-    alert("Room Created!");
-  };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   const room = await createRoom(roomName, description, roomCode);
+  //   if (!roomCode) {
+  //     alert("Please generate a Room Code before creating room");
+  //     return;
+  //   }
+  //   if (room) {
+  //     setRoomCode(room.roomCode);
+  //     alert("Room created successfully!");
+  //   }
+  //   // // await createRoom(roomName, description, roomCode);
+  //   // alert("Room Created!");
+  //   navigate(`/room/${room._id}`);
+
+  // };
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!roomCode) {
+    alert("Please generate a Room Code first");
+    return;
+  }
+
+  const response = await createRoom(roomName, description, roomCode);
+
+  if (!response || !response.room) {
+    alert("Failed to create room");
+    return;
+  }
+
+  const createdRoom = response.room;
+
+   setAlert({ message: "Room Created!", type: "success" });
+
+    // Hide after 3 seconds
+    setTimeout(() => setAlert(null), 1000);
+  navigate(`/room/${createdRoom._id}`);
+};
 
   return (
     <ProtectedRoute>
@@ -75,6 +103,13 @@ const room = await createRoom(roomName, description,roomCode);
               </button>
             </div>
           </div>
+{alert && (
+        <Alert
+          message={alert.message}
+          type={alert.type}
+          onClose={() => setAlert(null)}
+        />
+      )}
 
           <div className="flex justify-between mt-6">
             <button
@@ -83,12 +118,12 @@ const room = await createRoom(roomName, description,roomCode);
             >
               Create Room
             </button>
- {roomCode && (
-            <div className="mt-6 p-3 bg-gray-100 rounded-xl text-center">
-              <p className="text-gray-700">Share this Room Code:</p>
-              <p className="text-xl font-bold">{roomCode}</p>
-            </div>
-          )}
+            {roomCode && (
+              <div className="mt-6 p-3 bg-gray-100 rounded-xl text-center">
+                <p className="text-gray-700">Share this Room Code:</p>
+                <p className="text-xl font-bold">{roomCode}</p>
+              </div>
+            )}
             <button className="px-5 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition">
               Cancel
             </button>
