@@ -119,7 +119,7 @@ import { Link } from 'react-router-dom';
 export default function CollabIDELanding() {
     const [activeRoom, setActiveRoom] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
-const {isLogin} = useAuth()
+const {isLogin, login} = useAuth()
   
     const rooms = [
     {
@@ -186,31 +186,6 @@ const {isLogin} = useAuth()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-950 to-gray-900 text-white">
-      {/* Navigation */}
-      {/* <nav className="flex items-center justify-between px-8 py-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
-            <Code2 className="w-6 h-6" />
-          </div>
-          <span className="text-2xl font-bold">CollabIDE</span>
-        </div>
-        
-        <div className="hidden md:flex items-center gap-8">
-          <a href="#" className="hover:text-cyan-400 transition-colors">Home</a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">Features</a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">Pricing</a>
-          <a href="#" className="hover:text-cyan-400 transition-colors">FAQ</a>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          <button className="hidden md:block px-4 py-2 hover:text-cyan-400 transition-colors">
-            Sign In
-          </button>
-          <button className="md:hidden">
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
-      </nav> */}
 
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-8 py-20 text-center">
@@ -231,7 +206,7 @@ const {isLogin} = useAuth()
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
           <button className="group px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
             {
-              !isLogin ? (<Link to="/create-room">Create a room</Link>) :"Start coding free"
+              login ? (<Link to="/create-room">Create a room</Link>) :"Start coding free"
             }
           </button>
           <button className="px-8 py-4 bg-blue-900/30 hover:bg-blue-900/50 border border-blue-500/30 rounded-lg font-semibold text-lg transition-all flex items-center gap-2">
@@ -268,7 +243,7 @@ const {isLogin} = useAuth()
         </div>
 
         {/* Stats Section */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 pt-20 border-t border-blue-500/20">
+        {/* <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-20 pt-20 border-t border-blue-500/20">
           <div>
             <div className="text-4xl font-bold text-cyan-400 mb-2">50K+</div>
             <div className="text-gray-400">Active Users</div>
@@ -285,7 +260,30 @@ const {isLogin} = useAuth()
             <div className="text-4xl font-bold text-pink-400 mb-2">24/7</div>
             <div className="text-gray-400">Support</div>
           </div>
-        </div>
+        </div> */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-20 border-t border-white/10">
+  {[
+    { value: "50K+", label: "Active Users", color: "text-cyan-400", glow: "shadow-cyan-500/30" },
+    { value: "100K+", label: "Projects", color: "text-purple-400", glow: "shadow-purple-500/30" },
+    { value: "99.9%", label: "Uptime", color: "text-blue-400", glow: "shadow-blue-500/30" },
+    { value: "24/7", label: "Support", color: "text-pink-400", glow: "shadow-pink-500/30" },
+  ].map((stat, index) => (
+    <div
+      key={index}
+      className={`group p-6 rounded-2xl backdrop-blur-md bg-white/5 border border-white/10 
+      hover:border-white/20 hover:bg-white/10 transition-all duration-300 
+      shadow-lg hover:${stat.glow}`}
+    >
+      <div className={`text-5xl font-extrabold mb-3 ${stat.color} tracking-tight`}>
+        {stat.value}
+      </div>
+      <div className="text-gray-300 text-lg group-hover:text-white transition-colors">
+        {stat.label}
+      </div>
+    </div>
+  ))}
+</div>
+
       </main>
       {/* Create room section */}
           <section
@@ -361,7 +359,7 @@ const {isLogin} = useAuth()
         </div>
       </section>
 {/* FAQ Section */}
-   <section
+   {/* <section
         id="faq"
         className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
       >
@@ -408,7 +406,68 @@ const {isLogin} = useAuth()
             ))}
           </div>
         </div>
-      </section>
+      </section> */}
+      <section
+  id="faq"
+  className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
+>
+  <div className="max-w-4xl mx-auto">
+    <div className="text-center mb-20">
+      <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+        Frequently Asked Questions
+      </h2>
+      <p className="text-lg text-foreground/60">
+        Everything you need to know about CollabIDE
+      </p>
+    </div>
+
+    <div className="space-y-4">
+      {faqs.map((faq) => {
+        const isOpen = openFaqId === faq.id;
+
+        return (
+          <div
+            key={faq.id}
+            className="group glass-effect border border-white/10 rounded-2xl transition-all duration-300 hover:border-white/20 backdrop-blur-xl"
+          >
+            {/* Button */}
+            <button
+              onClick={() => toggleFaq(faq.id)}
+              className="w-full px-8 py-6 flex items-center justify-between transition-colors duration-300"
+            >
+              <h3 className="text-lg font-semibold text-foreground text-left group-hover:text-neon-cyan transition-colors">
+                {faq.question}
+              </h3>
+
+              {/* Icon animation */}
+              <div
+                className={`text-neon-cyan ml-4 flex-shrink-0 transition-transform duration-300 ${
+                  isOpen ? "rotate-180" : ""
+                }`}
+              >
+                <ChevronDown className="w-6 h-6" />
+              </div>
+            </button>
+
+            {/* Smooth Animated Answer */}
+            <div
+              className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${
+                isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              <div className="px-8 py-6 border-t border-white/10 bg-white/5">
+                <p className="text-foreground/80 leading-relaxed">
+                  {faq.answer}
+                </p>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  </div>
+</section>
+
        {/* CTA Section */}
           <section className="relative py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-neon-purple/20 to-neon-cyan/20 overflow-hidden">
               <div className="absolute inset-0 opacity-10">

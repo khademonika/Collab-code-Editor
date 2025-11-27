@@ -32,7 +32,8 @@ export const createRoom = async (req, res) => {
 export const joinRoom = async (req, res) => {
   try {
     const { roomCode } = req.body;
- 
+ const userId = req.user.id;  // from auth middleware
+  const username = req.user.username;
     
     if (!roomCode) {
       return res.status(400).json({ message: "Room code is required" });
@@ -43,7 +44,11 @@ export const joinRoom = async (req, res) => {
     if (!room) {
       return res.status(404).json({ message: "Room not found" });
     }
-
+const exists = room.participants.some(p => p.userId.toString() === userId);
+  if (!exists) {
+    room.participants.push({ userId, username });
+    await room.save();
+  }
     return res.status(200).json({
       message: "Room joined successfully",
       roomId: room._id,
@@ -58,7 +63,10 @@ export const getMyRooms = async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const rooms = await Room.find({ members: userId });
+    // const rooms = await Room.find({ members: userId });
+const rooms = await Room.find({ 
+      "participants.userId": userId 
+    });
 
     res.json({ rooms });
   } catch (error) {

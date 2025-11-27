@@ -12,7 +12,7 @@ import ActiveRoom from './pages/ActiveRoom'
 import { RoomProvider } from './context/RoomContext'
 import RoomPage from './pages/Roompage'
 import JoinRoom from './pages/JoinRoom'
-
+import { Toaster } from "react-hot-toast";
 const App = () => {
   const fetch = async () => {
     const data = await axios.get("/api/auth")
@@ -28,6 +28,7 @@ const App = () => {
       <AuthProvider>
         <RoomProvider>
           <BrowserRouter>
+           <Toaster position="top-center" />
             <Navbar />
 
             <Routes>

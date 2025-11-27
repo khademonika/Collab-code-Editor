@@ -131,7 +131,7 @@ import { Mail, Lock, Code, User } from "lucide-react";
 import axios from "axios";
 import UserNotExist from "../components/UserNotExist";
 import { useAuth } from "../context/AuthContext";
-
+import toast from "react-hot-toast";
 const LoginPage = () => {
   const [user, setUser] = useState({ email: "", password: "", username: "" });
   const [message, setMessage] = useState(false);
@@ -148,9 +148,11 @@ const LoginPage = () => {
       const { data } = await axios.post(url, user);
 
       login(data.user, data.token);
-      localStorage.setItem("token", data.token);
+toast("Login successfully")
 
+      localStorage.setItem("token", data.token);
       window.location.href = "/";
+
     } catch (error) {
       setMessage(true);
     } finally {

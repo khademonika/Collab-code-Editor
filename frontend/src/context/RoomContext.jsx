@@ -58,6 +58,7 @@ export const RoomContext = createContext();
 export const RoomProvider = ({ children }) => {
   const { token } = useAuth();  // NOW this returns correct token
   const [rooms, setRooms] = useState([]);
+  const [roomCode, setRoomCode] = useState("");
 
   // const createRoom = async (roomName, description) => {
   //   console.log("Using token:", token);   // DEBUG
@@ -100,9 +101,10 @@ const createRoom = async (roomName, description,roomCode) => {
 };
 
   return (
-    <RoomContext.Provider value={{ rooms, createRoom }}>
+    <RoomContext.Provider value={{ rooms, createRoom ,setRoomCode}}>
       {children}
     </RoomContext.Provider>
   );
 };
 
+// export const su\\/ = () => useContext(AuthContext);

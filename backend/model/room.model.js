@@ -47,7 +47,10 @@ import mongoose from "mongoose";
 // });
 
 const roomSchema = new mongoose.Schema({
-  roomName: String,
+  roomName: {
+    type:String,
+    required:true
+  },
   description: String,
   roomCode: {
     type: String,
@@ -57,6 +60,12 @@ const roomSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "User"
   },
+   participants: [
+    {
+      userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+      username: String
+    }
+  ],
   members: [
     {
       type: mongoose.Schema.Types.ObjectId,

@@ -4,14 +4,15 @@ import ProtectedRoute from "../components/ProtectedRoute";
 import { RoomContext } from "../context/RoomContext";
 import { useNavigate } from "react-router-dom";
 import Alert from "../components/Alert";
-
+import toast from "react-hot-toast"
 const CreateRoom = () => {
   const { createRoom } = useContext(RoomContext);
-const [alert, setAlert] = useState(null);
+  const [alert, setAlert] = useState(null);
   const [roomName, setRoomName] = useState("");
   const [description, setDescription] = useState("");
   const [roomCode, setRoomCode] = useState("");
-const navigate = useNavigate();
+
+  const navigate = useNavigate();
 
   // Generate Room Code
   const generateRoomCode = () => {
@@ -35,29 +36,35 @@ const navigate = useNavigate();
   //   navigate(`/room/${room._id}`);
 
   // };
-const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  if (!roomCode) {
-    alert("Please generate a Room Code first");
-    return;
-  }
+    if (!roomCode ) {
+      // alert("Please generate a Room Code first");
+      toast.error("Please generate a Room Code first")
+      return;
+    }
+ if (!roomName ) {
+      // alert("Please generate a Room Code first");
+      toast.error("Please enter a Room name")
+      return;
+    }
+    const response = await createRoom(roomName, description, roomCode);
 
-  const response = await createRoom(roomName, description, roomCode);
+    if (!response || !response.room) {
+      // alert("Failed to create room");
+      toast.error("Failed to create room")
+      return;
+    }
 
-  if (!response || !response.room) {
-    alert("Failed to create room");
-    return;
-  }
+    const createdRoom = response.room;
 
-  const createdRoom = response.room;
-
-   setAlert({ message: "Room Created!", type: "success" });
+    // setAlert({ message: "Room Created!", type: "success" });
 
     // Hide after 3 seconds
     setTimeout(() => setAlert(null), 1000);
-  navigate(`/room/${createdRoom._id}`);
-};
+    navigate(`/room/${createdRoom._id}`);
+  };
 
   return (
     <ProtectedRoute>
@@ -103,13 +110,13 @@ const handleSubmit = async (e) => {
               </button>
             </div>
           </div>
-{alert && (
-        <Alert
-          message={alert.message}
-          type={alert.type}
-          onClose={() => setAlert(null)}
-        />
-      )}
+          {alert && (
+            <Alert
+              message={alert.message}
+              type={alert.type}
+              onClose={() => setAlert(null)}
+            />
+          )}
 
           <div className="flex justify-between mt-6">
             <button
