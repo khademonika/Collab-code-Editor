@@ -43,14 +43,7 @@ const io = new Server(server, {
   }
 });
 const rooms = {}
-// let onlineUsers = new Map();
-// io.on("connection", (socket) => {
-//   console.log("User connected:", socket.id);
 
-//   // JOIN ROOM
-
-
-//   // REQUEST EDITOR PERMISSION
 io.on("request-edit", ({ roomId, user }) => {
   if (!rooms[roomId].editor) {
     rooms[roomId].editor = user;
@@ -61,26 +54,7 @@ io.on("request-edit", ({ roomId, user }) => {
 });
 
 
-//   // CODE CHANGE
-//   socket.on("code-change", ({ roomId, code }) => {
-//     roomCodes[roomId] = code;
-//     socket.to(roomId).emit("update-code", code);
-//   });
 
-//   // RELEASE EDITOR
-
-
-//   // DISCONNECT
-//   socket.on("disconnect", () => {
-//     for (let [userId, sockId] of onlineUsers.entries()) {
-//       if (sockId === socket.id) {
-//         onlineUsers.delete(userId);
-//         break;
-//       }
-//     }
-//     console.log("User disconnected:", socket.id);
-//   });
-// });
 io.on("connection", (socket) => {
   // socket.on("join-room", ({ roomId, user }) => {
 
@@ -109,30 +83,7 @@ io.on("connection", (socket) => {
     rooms[roomId].code = code;
     socket.to(roomId).emit("update-code", code);
   });
-  // socket.on("join-room", ({ roomId, user }) => {
-  //   socket.join(roomId);
-  //   socket.userId = user.id;
-  //   onlineUsers.set(user.id, socket.id);
-  //   io.to(roomId).emit("online-users", Array.from(onlineUsers.keys()));
-  //   if (!roomUsers[roomId]) roomUsers[roomId] = [];
-  //   roomUsers[roomId].push(user);
-  //   // Send current code
 
-  //   socket.emit("load-existing-code", roomCodes[roomId] || "");
-
-  //   // Send updated user list
-  //   io.to(roomId).emit("online-users", roomUsers[roomId]);
-  // });
-  // socket.on("disconnect", () => {
-  //   const roomId = socket.roomId;
-  //   const userId = socket.userId;
-
-  //   if (roomId && rooms[roomId]) {
-  //     rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== userId);
-  //     io.to(roomId).emit("online-users", rooms[roomId].users);
-  //   }
-  // });
-  // Replace your current disconnect logic with this:
 socket.on("disconnect", () => {
     const roomId = socket.roomId;
     const socketId = socket.id; // Use the socket ID for removal

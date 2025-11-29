@@ -183,15 +183,17 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 const [isLogin, setIsLogin] =useState(false)
   // Attach token to axios when app loads
-  useEffect(() => {
-    if (token) {
-      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-      fetchMe();
-    } else {
-      delete axios.defaults.headers.common["Authorization"];
-      setLoading(false);
-    }
-  }, [token]);
+useEffect(() => {
+  if (token) {
+    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+    setIsLogin(true);   // <-- ADD THIS
+    fetchMe();
+  } else {
+    delete axios.defaults.headers.common["Authorization"];
+    setIsLogin(false);  // <-- ADD THIS
+    setLoading(false);
+  }
+}, [token]);
 
   // GET /api/auth/me
   const fetchMe = async () => {
@@ -210,6 +212,7 @@ const [isLogin, setIsLogin] =useState(false)
     localStorage.setItem("token", jwtToken);
     setToken(jwtToken);
     setUser(userData);
+    setIsLogin(true)
   };
 
 
