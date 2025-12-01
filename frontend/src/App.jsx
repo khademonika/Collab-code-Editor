@@ -12,6 +12,7 @@ import { RoomProvider } from './context/RoomContext'
 import RoomPage from './pages/Roompage'
 import JoinRoom from './pages/JoinRoom'
 import { Toaster } from "react-hot-toast";
+import SettingsContent from './pages/Setting'
 const App = () => {
   const fetch = async () => {
     const data = await axios.get("/api/auth")
@@ -36,7 +37,7 @@ const App = () => {
               <Route path='/about' element={<About />} />
 
               <Route path='/create-room' element={<CreateRoomModal />} />
-              {/* <Route path='/active-room' element={<ActiveRoom />} /> */}
+              <Route path='/active-room' element={<SettingsContent />} />
               <Route path="/room/:roomId" element={<RoomPage />} />
               <Route path='/join-room' element={<JoinRoom />} />
 

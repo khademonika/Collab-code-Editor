@@ -1,9 +1,8 @@
-// import { createContext, useContext, useEffect, useState } from "react";
-// import axios from "axios";
+
 import React from "react";
 
 //  const AuthProvider = ({ children }) => {
- 
+
 
 //   const [isLogin, setIsLogin] = useState(true);
 
@@ -181,19 +180,19 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem("token") || null);
   const [loading, setLoading] = useState(true);
-const [isLogin, setIsLogin] =useState(false)
+  const [isLogin, setIsLogin] = useState(false)
   // Attach token to axios when app loads
-useEffect(() => {
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-    setIsLogin(true);   // <-- ADD THIS
-    fetchMe();
-  } else {
-    delete axios.defaults.headers.common["Authorization"];
-    setIsLogin(false);  // <-- ADD THIS
-    setLoading(false);
-  }
-}, [token]);
+  useEffect(() => {
+    if (token) {
+      axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      setIsLogin(true);   // <-- ADD THIS
+      fetchMe();
+    } else {
+      delete axios.defaults.headers.common["Authorization"];
+      setIsLogin(false);  // <-- ADD THIS
+      setLoading(false);
+    }
+  }, [token]);
 
   // GET /api/auth/me
   const fetchMe = async () => {
@@ -208,7 +207,7 @@ useEffect(() => {
 
   // LOGIN → save token + user
   const login = (userData, jwtToken) => {
-      // localStorage.setItem("token", res.data.token);
+    // localStorage.setItem("token", res.data.token);
     localStorage.setItem("token", jwtToken);
     setToken(jwtToken);
     setUser(userData);
@@ -221,11 +220,12 @@ useEffect(() => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    setIsLogin(false)
     window.location.href = "/login";
   };
 
   return (
-    <AuthContext.Provider value={{ user, token, loading, login,isLogin,setIsLogin, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, token, loading, login, isLogin, setIsLogin, logout, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

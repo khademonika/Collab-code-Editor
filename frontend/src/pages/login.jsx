@@ -1,137 +1,11 @@
 
-
-// import React, { useState } from "react";
-// import { Mail, Lock, Code } from "lucide-react";
-// import axios from "axios";
-// import UserNotExist from "../components/UserNotExist";
-// import { useAuth } from "../context/AuthContext";
-
-// const LoginPage = () => {
-//   const [user, setUser] = useState({ email: "", password: "" , username:""});
-//   const [message, setMessage] = useState(false)
-//   const { login, logout,setIsLogin,isLogin } = useAuth()
-
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
-
-//  try {
-//   const url = !isLogin ? "/api/auth/login" : "/api/auth/signup";
-
-//   // POST request with user data
-//   const { data } = await axios.post(url, user);
-//   // Update global login state
-//   login(data.user, data.token);
-//   // Save token AFTER getting response
-//   localStorage.setItem("token", data.token);
-
-
-
-//   // Redirect user
-//   window.location.href = "/";
-
-// } catch (error) {
-//   console.log(error.response?.data?.message || "Something went wrong");
-//   setMessage(true);
-// }
-
-//   };
-
-//   return (
-//     <div className="flex items-center justify-center min-h-screen p-4">
-//       <div className="glass-card w-full max-w-md p-8 rounded-xl">
-
-//         <div className="flex flex-col items-center mb-8">
-//           <Code size={40} className="text-violet-400 mb-2" />
-//           <h1 className="text-3xl font-bold text-white">
-//             {isLogin ? "Create an account" : "Welcome Back"}
-//           </h1>
-//         </div>
-
-//         <form onSubmit={handleSubmit} className="space-y-6">
-//           <div className="relative">
-//          {
-//           isLogin&& <div>
-//                <Mail
-//               size={20}
-//               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-//             />
-//             <input
-//               type="email"
-//               placeholder="Email"
-//               value={user.email}
-//               onChange={(e) =>
-//                 setUser({ ...user, email: e.target.value })
-//               }
-//               required
-//               className="w-full p-3 pl-10 bg-gray-800/60 text-white rounded-lg"
-//             />
-//           </div>
-//          }
-//           </div>
-//   <div className="relative">
-//             <Mail
-//               size={20}
-//               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-//             />
-//             <input
-//               type="text"
-//               placeholder="Username"
-//               value={user.username}
-//               onChange={(e) =>
-//                 setUser({ ...user, username: e.target.value })
-//               }
-//               required
-//               className="w-full p-3 pl-10 bg-gray-800/60 text-white rounded-lg"
-//             />
-//           </div>
-//           <div className="relative">
-//             <Lock
-//               size={20}
-//               className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-//             />
-//             <input
-//               type="password"
-//               placeholder="Password"
-//               value={user.password}
-//               onChange={(e) =>
-//                 setUser({ ...user, password: e.target.value })
-//               }
-//               required
-//               className="w-full p-3 pl-10 bg-gray-800/60 text-white rounded-lg"
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             className="neon-button w-full py-3 rounded-lg cursor-pointer text-white bg-gradient-to-r from-cyan-500 to-violet-600"
-//           >
-//             {isLogin ? "Sign Up" : "Login"}
-//           </button>
-//         </form>
-//         <p className="mt-8 text-center text-gray-400 text-sm">
-//           {isLogin ? "Already have an account?" : "Don't have an account?"}
-//           <button
-//             className="text-violet-400 ml-1 cursor-pointer"
-//             onClick={() => setIsLogin(!isLogin)}
-//           >
-//             {isLogin ? "Login" : "Signup"}
-//           </button>
-//         </p>
-//       </div>
-//       {message && (<UserNotExist onClose={() => setMessage(false)} />)}
-
-//     </div>
-//   );
-// };
-
-// export default LoginPage;
-
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { Mail, Lock, Code, User } from "lucide-react";
 import axios from "axios";
 import UserNotExist from "../components/UserNotExist";
 import { useAuth } from "../context/AuthContext";
 import toast from "react-hot-toast";
+import InputCompo from "../components/InputCompo";
 const LoginPage = () => {
   const [user, setUser] = useState({ email: "", password: "", username: "" });
   const [message, setMessage] = useState(false);
@@ -204,56 +78,26 @@ toast("Login successfully")
         {/* Email */}
         {isLogin && (
           <div className="relative group">
-            <Mail className="absolute left-3 top-3 text-gray-400" size={18} />
-            <input
-              type="email"
-              value={user.email}
-              onChange={(e) => setUser({ ...user, email: e.target.value })}
-              className="w-full p-3 pl-10 rounded-lg border focus:ring-2 transition-all"
-              style={{
-                background: "var(--input-bg)",
-                color: "var(--input-text)",
-                borderColor: "var(--border)",
-              }}
-              placeholder="Email"
-            />
+            <Mail className="absolute left-3 mr-5 top-3 text-gray-400 " size={18} />
+          
+            <InputCompo value={user.email} fun={(e) => setUser({ ...user, email: e.target.value })} placeholder="Email"/>
           </div>
         )}
 
         {/* Username */}
         <div className="relative group">
-          <User className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input
-            type="text"
-            value={user.username}
-            onChange={(e) => setUser({ ...user, username: e.target.value })}
-            className="w-full p-3 pl-10 rounded-lg border focus:ring-2 transition-all"
-            style={{
-              background: "var(--input-bg)",
-              color: "var(--input-text)",
-              borderColor: "var(--border)",
-            }}
-            placeholder="Username"
-            required
-          />
+          <User className="absolute left-3 top-3 text-gray-400" size={20} />
+        
+            <InputCompo value={user.username} fun={(e)=>setUser({ ...user, username: e.target.value })} placeholder="Username"/>
+
         </div>
 
         {/* Password */}
         <div className="relative group">
           <Lock className="absolute left-3 top-3 text-gray-400" size={18} />
-          <input
-            type="password"
-            value={user.password}
-            onChange={(e) => setUser({ ...user, password: e.target.value })}
-            className="w-full p-3 pl-10 rounded-lg border focus:ring-2 transition-all"
-            style={{
-              background: "var(--input-bg)",
-              color: "var(--input-text)",
-              borderColor: "var(--border)",
-            }}
-            placeholder="Password"
-            required
-          />
+
+            <InputCompo value={user.password} fun={(e)=>setUser({ ...user, password: e.target.value })} placeholder="Password"/>
+
         </div>
 
         {/* Button */}

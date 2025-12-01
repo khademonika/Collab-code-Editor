@@ -1,9 +1,11 @@
 
 
-import { Code2, Play, Menu, Star, Users, Zap, ArrowRight, ChevronDown, Globe, ChevronUp } from 'lucide-react';
+import { Code2, Play, Menu, Star, Users, Zap, ArrowRight, ChevronDown, Globe, ChevronUp, ChevronRight } from 'lucide-react';
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
+import HomeCards from '../components/HomeCards';
+import HomeHeadings from '../components/HomeHeadings';
 export default function CollabIDELanding() {
   const [activeRoom, setActiveRoom] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
@@ -33,6 +35,27 @@ export default function CollabIDELanding() {
   const toggleFaq = (id) => {
     setOpenFaqId(openFaqId === id ? null : id);
   };
+  
+  const steps = [
+    {
+      number: 1,
+      title: "Create a Room",
+      description: "Set up your collaborative workspace in seconds",
+      icon: "🚀",
+    },
+    {
+      number: 2,
+      title: "Invite Collaborators",
+      description: "Share your room link and invite your teammates",
+      icon: "👥",
+    },
+    {
+      number: 3,
+      title: "Code Together",
+      description: "Collaborate in real-time on any project",
+      icon: "⚡",
+    },
+  ];
   const faqs = [
     {
       id: "security",
@@ -78,7 +101,14 @@ export default function CollabIDELanding() {
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-8 py-20 text-center join">
         <div className="my-6">
-          <span className="inline-block px-4 py-2 bg-blue-900/50 border border-cyan-500/30 rounded-full text-cyan-400 text-sm">
+          <span
+            className="inline-block px-4 py-2 rounded-full text-sm transition-all"
+            style={{
+              background: "var(--badge-bg)",
+              border: "1px solid var(--badge-border)",
+              color: "var(--badge-text)",
+            }}
+          >
             ✨ Welcome to the future of collaboration
           </span>
         </div>
@@ -94,52 +124,42 @@ export default function CollabIDELanding() {
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-20">
           <button className="group neon-button px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-lg font-semibold text-lg transition-all transform hover:scale-105 shadow-lg shadow-purple-500/30">
             {
-              login ? (<Link to="/create-room">Create a room</Link>) : "Start coding free"
+              isLogin ? (<Link to="/create-room">Create a room</Link>) : (<Link to="/login">Start coding free</Link>)
             }
           </button>
-<button
-  className="px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2"
-  style={{
-    background: "var(--btn-bg)",
-    border: "1px solid var(--btn-border)",
-    color: "var(--btn-text)",
-  }}
-  onMouseEnter={(e) => (e.currentTarget.style.background = "var(--btn-hover)")}
-  onMouseLeave={(e) => (e.currentTarget.style.background = "var(--btn-bg)")}
->
-  <Play className="w-5 h-5" />
-  Watch Demo
-</button>
+          <button
+            className="px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2"
+            style={{
+              background: "var(--btn-bg)",
+              border: "1px solid var(--btn-border)",
+              color: "var(--btn-text)",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--btn-hover)")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--btn-bg)")}
+          >
+            <Play className="w-5 h-5" />
+            Watch Demo
+          </button>
 
         </div>
+ 
 
         {/* Feature Cards */}
         <div className="grid md:grid-cols-3 join gap-8 mt-20">
-          <div className=" join backdrop-blur-sm border border-blue-500/20 rounded-2xl p-8 hover:border-cyan-500/50 transition-all">
-            <div className="w-14 h-14 bg-cyan-500/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-              <Users className="w-7 h-7 text-cyan-400" />
-            </div>
-            <h3 className="text-xl font-bold mb-3">Real-time Collaboration</h3>
-            <p className="text-gray-400">Work together with your team in real-time with live cursors and instant updates.</p>
-          </div>
 
-          <div className=" backdrop-blur-sm border border-purple-500/20 rounded-2xl p-8 hover:border-purple-500/50 transition-all">
-            <div className="w-14 h-14 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-              <Zap className="w-7 h-7 text-purple-400" />
-            </div>
-            <h3 className="text-xl font-bold mb-3">Lightning Fast</h3>
-            <p className="text-gray-400">Optimized performance with instant synchronization across all connected users.</p>
-          </div>
+          <HomeCards text="Real-time Collaboration"
+            desc="Work together with your team in real-time with live cursors and instant updates."
+            icon={<Users className="w-7 h-7 text-cyan-400" />} />
 
-          <div className=" backdrop-blur-sm border border-cyan-500/20 rounded-2xl p-8 hover:border-cyan-500/50 transition-all">
-            <div className="w-14 h-14 bg-blue-500/20 rounded-xl flex items-center justify-center mb-4 mx-auto">
-              <Globe className="w-7 h-7 text-blue-400" />
-            </div>
-            <h3 className="text-xl font-bold mb-3">Global Access</h3>
-            <p className="text-gray-400">Access your projects from anywhere in the world with cloud-based infrastructure.</p>
-          </div>
+          <HomeCards text="Lightning Fast"
+            desc="Optimized performance with instant synchronization across all connected users."
+            icon={<Zap className="w-7 h-7 text-purple-400" />} />
+
+          <HomeCards text="Global Access"
+            desc="Access your projects from anywhere in the world with cloud-based infrastructure."
+            icon={<Globe className="w-7 h-7 text-blue-400" />} />
         </div>
-        
+
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-24 pt-20 border-t border-white/10">
           {[
             { value: "50K+", label: "Active Users", glow: "shadow-cyan-500/30" },
@@ -171,12 +191,9 @@ export default function CollabIDELanding() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Create & Join Rooms
-            </h2>
-            <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
-              Instantly create collaborative spaces and invite your team
-            </p>
+
+            <HomeHeadings heading="Create & Join Rooms"
+              desc="Instantly create collaborative spaces and invite your team" />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -186,8 +203,8 @@ export default function CollabIDELanding() {
                   key={index}
                   onClick={() => setActiveRoom(index)}
                   className={`w-full p-6 rounded-2xl border transition-all duration-300 text-left group ${activeRoom === index
-                      ? "glass-effect border-neon-cyan/50 bg-neon-cyan/5 shadow-lg shadow-neon-cyan/30"
-                      : "glass-effect border-white/10 hover:border-neon-cyan/30 hover:bg-white/5"
+                    ? "glass-effect border-neon-cyan/50 bg-neon-cyan/5 shadow-lg shadow-neon-cyan/30"
+                    : "glass-effect border-white/10 hover:border-neon-cyan/30 hover:bg-white/5"
                     }`}
                 >
                   <div className="flex items-center justify-between mb-2">
@@ -236,19 +253,55 @@ export default function CollabIDELanding() {
           </div>
         </div>
       </section>
+    {/* How It Works Section */}
+      <section className="relative py-32 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-white/5 to-transparent">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center mb-20">
+            <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
+              Simple as 1-2-3
+            </h2>
+            <p className="text-lg text-foreground/60 max-w-2xl mx-auto">
+              Get started in minutes with our intuitive process
+            </p>
+          </div>
 
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {steps.map((step, index) => (
+              <div
+                key={index}
+                className="group relative"
+                style={{ animation: `slide-in-from-bottom 0.5s ease-out ${index * 0.1}s both` }}
+              >
+                <div className="text-center h-full">
+                  <div className="w-20 h-20 rounded-full bg-gradient-to-br from-neon-cyan to-neon-purple flex items-center justify-center text-4xl mb-6 mx-auto shadow-lg shadow-neon-cyan/30 group-hover:shadow-neon-purple/50 group-hover:scale-110 transition-all duration-300">
+                    {step.icon}
+                  </div>
+                  <h3 className="text-2xl font-bold text-foreground mb-3 group-hover:text-neon-cyan transition-colors">
+                    {step.title}
+                  </h3>
+                  <p className="text-foreground/60 group-hover:text-foreground/80 transition-colors">
+                    {step.description}
+                  </p>
+                </div>
+
+                {index < steps.length - 1 && (
+                  <div className="absolute top-20 -right-4 hidden md:flex text-neon-cyan/30 group-hover:text-neon-cyan/60 transition-colors">
+                    <ChevronRight className="w-8 h-8" />
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
       <section
         id="faq"
         className="relative py-32 px-4 sm:px-6 lg:px-8 overflow-hidden"
       >
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-20">
-            <h2 className="text-5xl md:text-6xl font-bold text-foreground mb-6">
-              Frequently Asked Questions
-            </h2>
-            <p className="text-lg text-foreground/60">
-              Everything you need to know about CollabIDE
-            </p>
+            <HomeHeadings heading="Frequently Asked Questions"
+              desc="Everything you need to know about CollabIDE" />
           </div>
 
           <div className="space-y-4">
@@ -271,13 +324,10 @@ export default function CollabIDELanding() {
                     {/* Icon animation */}
                     <div
                       className={`text-neon-cyan ml-4 flex-shrink-0 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-                        }`}
-                    >
+                        }`}>
                       <ChevronDown className="w-6 h-6" />
                     </div>
                   </button>
-
-                  {/* Smooth Animated Answer */}
                   <div
                     className={`overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
                       }`}
@@ -302,16 +352,16 @@ export default function CollabIDELanding() {
         </div>
 
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-            Ready to transform your coding?
-          </h2>
-          <p className="text-xl text-foreground/80 mb-8">
-            Join thousands of developers collaborating in real-time today.
-          </p>
+
+          <HomeHeadings heading="Ready to transform your coding?"
+            desc=" Join thousands of developers collaborating in real-time today." />
+
           <button className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-background font-semibold overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-neon-cyan/50 hover:scale-105">
             <span className="relative z-10 flex items-center justify-center gap-2">
-              <Link to="/login">Start Free</Link>
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              {isLogin ? "" : (<Link to="/login">
+                Start Free
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>)}
+
             </span>
           </button>
         </div>

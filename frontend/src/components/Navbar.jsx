@@ -7,7 +7,7 @@ import { Code2, Menu, X, Sun, Moon } from "lucide-react";
 
 const Navbar = () => {
   const { theme, toggleTheme } = useTheme();
-  const { logout, user } = useAuth();
+  const { logout, user, isLogin } = useAuth();
   const navigate = useNavigate();
 
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -35,7 +35,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex items-center gap-8">
+          <div className="hidden md:flex cursor-pointer items-center gap-8">
             {links.map((link, i) => (
               <Link
                 key={i}
@@ -46,10 +46,10 @@ const Navbar = () => {
             ))}
 
             {/* Auth Buttons */}
-            {!user ? (
+            {(!user && !isLogin) ? (
               <Link to="/login">
                 <button
-                  className="px-4 py-2 rounded-lg text-sm font-medium border">
+                  className="px-4 py-2 cursor-pointer rounded-lg text-sm font-medium border">
                   Login
                 </button>
               </Link>
@@ -57,14 +57,14 @@ const Navbar = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => navigate("/join-room")}
-                  className="px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
+                  className="px-4 py-2 cursor-pointer bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition"
                 >
                   Join Room
                 </button>
 
                 <button
                   onClick={logout}
-                  className="px-4 py-2 rounded-lg text-sm font-medium ">
+                  className="px-4 cursor-pointer py-2 rounded-lg text-sm font-medium ">
                   Logout
                 </button>
 
@@ -73,7 +73,7 @@ const Navbar = () => {
 
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full"
+              className="p-2 rounded-full cursor-pointer"
             >
               {theme === "dark" ? (
                 <Sun className="text-yellow-300" />
@@ -107,9 +107,9 @@ const Navbar = () => {
               </Link>
             ))}
 
-            {!user ? (
+            {(!user && !isLogin ) ? (
               <Link to="/login" onClick={() => setMobileOpen(false)}>
-                <button className="w-full px-4 py-2 border rounded-lg">
+                <button className="w-full cursor-pointer px-4 py-2 border rounded-lg">
                   Login
                 </button>
               </Link>
@@ -139,7 +139,7 @@ const Navbar = () => {
 
             <button
               onClick={toggleTheme}
-              className="w-full flex items-center justify-center gap-2 py-2 mt-2 border rounded-lg"
+              className="w-full flex cursor-pointer items-center justify-center gap-2 py-2 mt-2 border rounded-lg"
             >
               {theme === "dark" ? (
                 <Sun className="text-yellow-300" />

@@ -44,114 +44,193 @@ const io = new Server(server, {
 });
 const rooms = {}
 
-io.on("request-edit", ({ roomId, user }) => {
-  if (!rooms[roomId].editor) {
-    rooms[roomId].editor = user;
-    io.to(roomId).emit("editor-updated", user);
-  } else {
-    socket.emit("edit-denied", rooms[roomId].editor);
-  }
-});
+// io.on("request-edit", ({ roomId, user }) => {
+//   if (!rooms[roomId].editor) {
+//     rooms[roomId].editor = user;
+//     io.to(roomId).emit("editor-updated", user);
+//   } else {
+//     socket.emit("edit-denied", rooms[roomId].editor);
+//   }
+// });
 
+
+
+// io.on("connection", (socket) => {
+  
+//   socket.on("code-change", ({ roomId, code }) => {
+//     rooms[roomId].code = code;
+//     socket.to(roomId).emit("update-code", code);
+//   });
+
+//   socket.on("disconnect", () => {
+//     const roomId = socket.roomId;
+//     const socketId = socket.id; // Use the socket ID for removal
+
+//     if (roomId && rooms[roomId]) {
+//       // Filter out the user object that has the disconnecting socket's ID
+//       rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socketId);
+
+//       // If the editor disconnects, release the editor access
+//       if (roomEditors[roomId] && roomEditors[roomId].socket === socketId) {
+//         roomEditors[roomId] = null;
+//         io.to(roomId).emit("editor-updated", null);
+//       }
+
+//       // Emit the updated list to all remaining users in the room
+//       io.to(roomId).emit("online-users", rooms[roomId].users);
+//     }
+//   });
+
+//   // Update the join-room logic to use socket ID for identification:
+//   socket.on("join-room", ({ roomId, user }) => {
+//     socket.join(roomId);
+//     socket.roomId = roomId;
+//     socket.userId = user.id; // Keep userId for optional tracking
+
+//     if (!rooms[roomId]) rooms[roomId] = { users: [], code: "" };
+//     if (!roomEditors[roomId]) roomEditors[roomId] = null; // Initialize editor tracking
+
+//     // Filter out previous connection attempts from the *same socket* or other users with the *same user id*
+//     // It's safer to filter by socket ID if you want multiple tabs for the same user name to be counted
+//     rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socket.id);
+
+//     // Add fresh user object
+//     rooms[roomId].users.push({
+//       socket: socket.id,
+//       id: user.id,
+//       name: user.username
+//     });
+
+//     // Send the current editor status
+//     socket.emit("editor-updated", roomEditors[roomId]);
+
+//     io.to(roomId).emit("online-users", rooms[roomId].users);
+
+//     // Load existing code only for this new socket
+//     socket.emit("update-code", rooms[roomId].code);
+//   });
+//   socket.on("request-edit", ({ roomId, user }) => {
+//     // Use roomEditors for tracking editor as in your commented out code
+//     if (!roomEditors[roomId]) {
+//       roomEditors[roomId] = user;
+//       io.to(roomId).emit("editor-updated", user);
+//     } else {
+//       // rooms[roomId].editor is not defined in your storage, use roomEditors
+//       socket.emit("edit-denied", roomEditors[roomId]);
+//     }
+//   });
+
+//   socket.on("code-change", ({ roomId, code }) => {
+//     rooms[roomId].code = code;
+//     // Send code change to all **other** sockets in the room
+//     socket.to(roomId).emit("update-code", code);
+//   });
+
+//   socket.on("release-editor", ({ roomId }) => {
+//     roomEditors[roomId] = null;
+//     io.to(roomId).emit("editor-updated", null);
+//   });
+//  socket.on("cursor-change", ({ roomId, user, position }) => {
+//   socket.to(roomId).emit("cursor-update", { user, position });
+// });
+
+// });
+// server.js (socket part)
 
 
 io.on("connection", (socket) => {
-  // socket.on("join-room", ({ roomId, user }) => {
+  console.log("WS connected:", socket.id);
 
-  //   socket.join(roomId);
-  //   socket.roomId = roomId;
-  //   socket.userId = user.id;
-  //   if (!rooms[roomId]) rooms[roomId] = { users: [], code: "" };
+  socket.on("join-room", ({ roomId, user }) => {
+    if (!roomId || !user) return;
 
-  //   // Remove old duplicates
-  //   rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== user.id);
+    socket.join(roomId);
+    socket.roomId = roomId;
 
-  //   // Add fresh user object
-  //   rooms[roomId].users.push({
-  //     // id: user.id,
-  //     // name: user.username
-  //     socket: socket.id,       // unique per browser
-  //     id: user.id,             // optional
-  //     name: user.username
-  //   });
+    if (!rooms[roomId]) rooms[roomId] = { users: [], code: "", language: "javascript", editor: null };
 
-  //   io.to(roomId).emit("online-users", rooms[roomId].users);
-  //   // Load existing code only for this room
-  //   socket.emit("update-code", rooms[roomId].code);
-  // });
+    // remove any existing entries for this socket
+    rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socket.id);
+
+    // add this socket
+    rooms[roomId].users.push({
+      socket: socket.id,
+      id: user.id,
+      name: user.username || user.name || "Unknown"
+    });
+
+    // send full user list to everyone in room
+    io.to(roomId).emit("online-users", rooms[roomId].users);
+
+    // send current code and language to newly joined socket only
+    socket.emit("update-code", rooms[roomId].code);
+    socket.emit("language-changed", rooms[roomId].language);
+    socket.emit("editor-updated", rooms[roomId].editor || null);
+  });
+
+  // code change from a client -> save to room and broadcast to other sockets
   socket.on("code-change", ({ roomId, code }) => {
+    if (!roomId) return;
+    if (!rooms[roomId]) rooms[roomId] = { users: [], code: "", language: "javascript", editor: null };
     rooms[roomId].code = code;
     socket.to(roomId).emit("update-code", code);
   });
 
-socket.on("disconnect", () => {
-    const roomId = socket.roomId;
-    const socketId = socket.id; // Use the socket ID for removal
+  // language change
+  socket.on("language-change", ({ roomId, language }) => {
+    if (!roomId || !language) return;
+    if (!rooms[roomId]) rooms[roomId] = { users: [], code: "", language: "javascript", editor: null };
+    rooms[roomId].language = language;
+    io.to(roomId).emit("language-changed", language);
+  });
 
-    if (roomId && rooms[roomId]) {
-      // Filter out the user object that has the disconnecting socket's ID
-      rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socketId);
-      
-      // If the editor disconnects, release the editor access
-      if (roomEditors[roomId] && roomEditors[roomId].socket === socketId) {
-          roomEditors[roomId] = null;
-          io.to(roomId).emit("editor-updated", null);
-      }
-      
-      // Emit the updated list to all remaining users in the room
-      io.to(roomId).emit("online-users", rooms[roomId].users);
+  // run output (when someone runs code, broadcast output to all)
+  socket.on("run-output", ({ roomId, output }) => {
+    if (!roomId) return;
+    io.to(roomId).emit("run-output", output);
+  });
+
+  // request / release editor
+  socket.on("request-edit", ({ roomId, user }) => {
+    if (!roomId) return;
+    if (!rooms[roomId]) rooms[roomId] = { users: [], code: "", language: "javascript", editor: null };
+
+    if (!rooms[roomId].editor) {
+      rooms[roomId].editor = { socket: socket.id, ...user };
+      io.to(roomId).emit("editor-updated", rooms[roomId].editor);
+    } else {
+      socket.emit("edit-denied", rooms[roomId].editor);
     }
-});
+  });
 
-// Update the join-room logic to use socket ID for identification:
-socket.on("join-room", ({ roomId, user }) => {
-    socket.join(roomId);
-    socket.roomId = roomId;
-    socket.userId = user.id; // Keep userId for optional tracking
+  socket.on("release-editor", ({ roomId }) => {
+    if (!roomId || !rooms[roomId]) return;
+    rooms[roomId].editor = null;
+    io.to(roomId).emit("editor-updated", null);
+  });
 
-    if (!rooms[roomId]) rooms[roomId] = { users: [], code: "" };
-    if (!roomEditors[roomId]) roomEditors[roomId] = null; // Initialize editor tracking
+  // cursor positions: broadcast to others in the room
+  socket.on("cursor-change", ({ roomId, cursor }) => {
+    if (!roomId) return;
+    socket.to(roomId).emit("cursor-change", { socketId: socket.id, cursor });
+  });
 
-    // Filter out previous connection attempts from the *same socket* or other users with the *same user id*
-    // It's safer to filter by socket ID if you want multiple tabs for the same user name to be counted
+  socket.on("disconnect", () => {
+    const roomId = socket.roomId;
+    if (!roomId || !rooms[roomId]) return;
+
+    // remove user by socket id
     rooms[roomId].users = rooms[roomId].users.filter(u => u.socket !== socket.id);
-    
-    // Add fresh user object
-    rooms[roomId].users.push({
-      socket: socket.id, 
-      id: user.id, 
-      name: user.username
-    });
 
-    // Send the current editor status
-    socket.emit("editor-updated", roomEditors[roomId]);
-    
-    io.to(roomId).emit("online-users", rooms[roomId].users);
-    
-    // Load existing code only for this new socket
-    socket.emit("update-code", rooms[roomId].code);
-});
-socket.on("request-edit", ({ roomId, user }) => {
-      // Use roomEditors for tracking editor as in your commented out code
-      if (!roomEditors[roomId]) {
-        roomEditors[roomId] = user;
-        io.to(roomId).emit("editor-updated", user);
-      } else {
-        // rooms[roomId].editor is not defined in your storage, use roomEditors
-        socket.emit("edit-denied", roomEditors[roomId]);
-      }
-    });
-
-    socket.on("code-change", ({ roomId, code }) => {
-      rooms[roomId].code = code;
-      // Send code change to all **other** sockets in the room
-      socket.to(roomId).emit("update-code", code);
-    });
-
-    socket.on("release-editor", ({ roomId }) => {
-      roomEditors[roomId] = null;
+    // if editor was this socket, release editor
+    if (rooms[roomId].editor && rooms[roomId].editor.socket === socket.id) {
+      rooms[roomId].editor = null;
       io.to(roomId).emit("editor-updated", null);
-    });
+    }
+
+    io.to(roomId).emit("online-users", rooms[roomId].users);
+  });
+ 
 });
 
 

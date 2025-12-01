@@ -1,239 +1,175 @@
-// import React, { useState } from 'react';
-// import { Home, Grid, Users, Settings } from 'lucide-react';
 
-// export default function ActiveRoom() {
-//   const [activeNav, setActiveNav] = useState('rooms');
-//   const [darkMode, setDarkMode] = useState(false);
+import React, { useState } from "react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+export default function EditorSettings({ onChange }) {
+  const [settings, setSettings] = useState({
+    fontSize: "14",
+    theme: "light",
+    wordWrap: false,
+    lineNumbers: true,
+  });
 
-//   const rooms = [
-//     { name: 'Project Hermes', participants: 5 },
-//     { name: 'Apollo-13 RDD', participants: 3 },
-//     { name: 'Backend Refactor', participants: 8 }
-//   ];
-
-//   return (
-//     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-blue-300 to-cyan-300 flex items-center justify-center p-8">
-//       <div className="w-full max-w-6xl h-[600px] bg-white rounded-3xl shadow-2xl flex overflow-hidden">
-//         {/* Sidebar */}
-//         <div className="w-52 bg-gray-900 text-white p-6 flex flex-col">
-//           <div className="mb-12">
-//             <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-//               <span className="text-2xl font-bold">{'</>'}</span>
-//             </div>
-//           </div>
-
-//           <nav className="space-y-2 flex-1">
-//             <button
-//               onClick={() => setActiveNav('projects')}
-//               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-//                 activeNav === 'projects' ? 'bg-gray-800' : 'hover:bg-gray-800'
-//               }`}
-//             >
-//               <Home size={20} />
-//               <span>Projects</span>
-//             </button>
-
-//             <button
-//               onClick={() => setActiveNav('rooms')}
-//               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-//                 activeNav === 'rooms' ? 'bg-gray-800' : 'hover:bg-gray-800'
-//               }`}
-//             >
-//               <Grid size={20} />
-//               <span>Rooms</span>
-//             </button>
-
-//             <button
-//               onClick={() => setActiveNav('team')}
-//               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-//                 activeNav === 'team' ? 'bg-gray-800' : 'hover:bg-gray-800'
-//               }`}
-//             >
-//               <Users size={20} />
-//               <span>Team</span>
-//             </button>
-
-//             <button
-//               onClick={() => setActiveNav('settings')}
-//               className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-colors ${
-//                 activeNav === 'settings' ? 'bg-gray-800' : 'hover:bg-gray-800'
-//               }`}
-//             >
-//               <Settings size={20} />
-//               <span>Settings</span>
-//             </button>
-//           </nav>
-//         </div>
-
-//         {/* Main Content */}
-//         <div className="flex-1 bg-gray-50 p-12 relative">
-//           {/* Header */}
-//           <div className="flex justify-between items-center mb-12">
-//             <h1 className="text-3xl font-bold text-gray-900">Active Coding Rooms</h1>
-            
-//             <div className="flex items-center gap-4">
-//               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400"></div>
-//               <button
-//                 onClick={() => setDarkMode(!darkMode)}
-//                 className={`w-14 h-8 rounded-full transition-colors relative ${
-//                   darkMode ? 'bg-blue-600' : 'bg-gray-300'
-//                 }`}
-//               >
-//                 <div
-//                   className={`absolute top-1 w-6 h-6 bg-white rounded-full shadow-md transition-transform ${
-//                     darkMode ? 'translate-x-7' : 'translate-x-1'
-//                   }`}
-//                 ></div>
-//               </button>
-//             </div>
-//           </div>
-
-//           {/* Room Cards */}
-//           <div className="grid grid-cols-3 gap-6">
-//             {rooms.map((room, idx) => (
-//               <div
-//                 key={idx}
-//                 className="group relative bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-200"
-//                 style={{
-//                   background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(240,245,255,0.9) 100%)',
-//                   backdropFilter: 'blur(10px)',
-//                   boxShadow: '0 8px 32px rgba(139, 92, 246, 0.2)'
-//                 }}
-//               >
-//                 <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-cyan-200 via-blue-200 to-purple-300 opacity-0 group-hover:opacity-20 transition-opacity"></div>
-                
-//                 <div className="relative z-10 text-center">
-//                   <h3 className="text-xl font-bold text-gray-900 mb-4">{room.name}</h3>
-//                   <p className="text-gray-600 mb-6">{room.participants} Participants</p>
-                  
-//                   <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-md hover:shadow-lg">
-//                     Join Room
-//                   </button>
-//                 </div>
-//               </div>
-//             ))}
-//           </div>
-
-//           {/* Decorative Elements */}
-//           <div className="absolute bottom-8 right-8 w-16 h-16 opacity-20">
-//             <div className="w-full h-full bg-gradient-to-br from-purple-400 to-pink-400 rounded-full animate-pulse"></div>
-//           </div>
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-
-import React, { useState, useEffect } from 'react';
-import { Home, Grid, Users, Settings } from 'lucide-react';
-import axios from 'axios';
-
-export default function ActiveRoom() {
-  const [rooms, setRooms] = useState([]);
-
-  // Fetch rooms from backend
-  // useEffect(() => {
-  //   const fetchRooms = async () => {
-  //     try {
-  //       const res = await axios.get("http://localhost:5000/api/rooms/:roomId");
-  //       setRooms(res.data);
-  //       console.log((res.data));
-        
-  //     } catch (err) {
-  //       console.log("Error fetching rooms:", err);
-  //     }
-  //   };
-
-  //   fetchRooms();
-  // }, []);
-useEffect(() => {
-  const fetchRooms = async () => {
-    try {
-      const token = localStorage.getItem("token");
-
-      const res = await axios.get("http://localhost:5000/api/rooms/my-rooms", {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      setRooms(res.data);
-    } catch (err) {
-      console.log("Error fetching rooms:", err);
-    }
+  const updateSetting = (key, value) => {
+    const updated = { ...settings, [key]: value };
+    setSettings(updated);
+    if (onChange) onChange(updated);
   };
 
-  fetchRooms();
-}, []);
+  return (
+    <div className="p-6 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Editor Settings</h1>
+
+      <Card className="mb-4">
+        <CardContent className="p-4 space-y-4">
+          {/* Font Size */}
+          <div className="space-y-2">
+            <Label>Default Font Size</Label>
+            <Select
+              value={settings.fontSize}
+              onValueChange={(v) => updateSetting("fontSize", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select font size" />
+              </SelectTrigger>
+              <SelectContent>
+                {[12, 14, 16, 18, 20, 24].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}px
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Theme */}
+          <div className="space-y-2">
+            <Label>Theme</Label>
+            <Select
+              value={settings.theme}
+              onValueChange={(v) => updateSetting("theme", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Word Wrap */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="wordWrap">Word Wrap</Label>
+            <Switch
+              id="wordWrap"
+              checked={settings.wordWrap}
+              onCheckedChange={(v) => updateSetting("wordWrap", v)}
+            />
+          </div>
+
+          {/* Line Numbers */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="lineNumbers">Line Numbers</Label>
+            <Switch
+              id="lineNumbers"
+              checked={settings.lineNumbers}
+              onCheckedChange={(v) => updateSetting("lineNumbers", v)}
+            />
+          </div>
+
+          <Button className="w-full mt-4">Save Settings</Button>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+export default function EditorSettings({ onChange }) {
+  const [settings, setSettings] = useState({
+    fontSize: "14",
+    theme: "light",
+    wordWrap: false,
+    lineNumbers: true,
+  });
+
+  const updateSetting = (key, value) => {
+    const updated = { ...settings, [key]: value };
+    setSettings(updated);
+    if (onChange) onChange(updated);
+  };
 
   return (
-    <div className=" min-h-screen flex justify-center p-4 ">
-      <div className="w-full max-w-7xl bg-white rounded-3xl shadow-2xl flex flex-col lg:flex-row overflow-hidden">
+    <div className="p-6 max-w-xl mx-auto">
+      <h1 className="text-2xl font-bold mb-4">Editor Settings</h1>
 
-        {/* Sidebar */}
-        {/* <div className="w-full lg:w-56 bg-gray-900 text-white p-6 flex flex-row lg:flex-col justify-between lg:justify-start">
-          
-          {/* Logo */}
-          <div className="mb-6 hidden lg:block">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-2xl font-bold">{'</>'}</span>
-            </div>
+      <Card className="mb-4">
+        <CardContent className="p-4 space-y-4">
+          {/* Font Size */}
+          <div className="space-y-2">
+            <Label>Default Font Size</Label>
+            <Select
+              value={settings.fontSize}
+              onValueChange={(v) => updateSetting("fontSize", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select font size" />
+              </SelectTrigger>
+              <SelectContent>
+                {[12, 14, 16, 18, 20, 24].map((size) => (
+                  <SelectItem key={size} value={String(size)}>
+                    {size}px
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Navigation */}
-          {/* <nav className="space-y-2 flex-1 flex lg:flex-col">
-            {[
-              { key: 'projects', label: 'Projects', icon: <Home size={20}/> },
-              { key: 'rooms', label: 'Rooms', icon: <Grid size={20}/> },
-              { key: 'team', label: 'Team', icon: <Users size={20}/> },
-              { key: 'settings', label: 'Settings', icon: <Settings size={20}/> }
-            ].map(item => (
-              <button
-                key={item.key}
-                onClick={() => setActiveNav(item.key)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-lg w-full transition-colors
-                  ${activeNav === item.key ? "bg-gray-800" : "hover:bg-gray-800"}`}
-              >
-                {item.icon}
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </nav> */}
-        {/* </div>  */}
-
-        {/* Main Content */}
-        <div className="flex-1 bg-gray-50 p-6 md:p-10 relative">
-          
-          {/* Header */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 text-gray-900">
-            <h1 className="text-2xl md:text-3xl font-bold">Active Coding Rooms</h1>
-
-            <div className="flex items-center gap-4 mt-4 md:mt-0">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-400 to-pink-400"></div>
-              
-   
-            </div>
+          {/* Theme */}
+          <div className="space-y-2">
+            <Label>Theme</Label>
+            <Select
+              value={settings.theme}
+              onValueChange={(v) => updateSetting("theme", v)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Select theme" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="light">Light</SelectItem>
+                <SelectItem value="dark">Dark</SelectItem>
+                <SelectItem value="system">System</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
 
-          {/* Rooms Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map((room, idx) => (
-              <div
-                key={idx}
-                className="relative bg-white rounded-3xl p-6 shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-200"
-              >
-                <h3 className="text-xl font-bold text-gray-900 mb-3">{room.name}</h3>
-                <p className="text-gray-600 mb-6">{room.participants} Participants</p>
-
-                <button className="w-full bg-gradient-to-r from-blue-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:scale-105 transition-transform">
-                  Join Room
-                </button>
-              </div>
-            ))}
+          {/* Word Wrap */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="wordWrap">Word Wrap</Label>
+            <Switch
+              id="wordWrap"
+              checked={settings.wordWrap}
+              onCheckedChange={(v) => updateSetting("wordWrap", v)}
+            />
           </div>
 
-        </div>
-      </div>
+          {/* Line Numbers */}
+          <div className="flex items-center justify-between">
+            <Label htmlFor="lineNumbers">Line Numbers</Label>
+            <Switch
+              id="lineNumbers"
+              checked={settings.lineNumbers}
+              onCheckedChange={(v) => updateSetting("lineNumbers", v)}
+            />
+          </div>
+
+          <Button className="w-full mt-4">Save Settings</Button>
+        </CardContent>
+      </Card>
     </div>
   );
 }

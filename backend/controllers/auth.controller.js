@@ -5,9 +5,9 @@ import dotenv from "dotenv"
 dotenv.config()
 export const signupController = async (req, res) => {
   try {
-    const { email, password,username } = req.body;
+    const { email, password, username } = req.body;
 
-    if (!email || !password|| !username) {
+    if (!email || !password || !username) {
       return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -28,58 +28,24 @@ export const signupController = async (req, res) => {
 
     return res.status(201).json({
       message: "User registered successfully",
-      token,        // ★ return token
+      token,      
       user: {
         id: newUser._id,
         email: newUser.email,
-        username:newUser.username
+        username: newUser.username
       },
     });
 
 
   } catch (error) {
     console.log(error.message);
-    
+
     return res.status(500).json({ message: "Server Error" });
   }
 };
 
-// N1JCKJ
-
-// export const loginController = async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     // 1. Check if user exists
-//     const user = await User.findOne({ email });
-
-//     if (!user) {
-//       return res.status(400).json({ message: "User does not exist" });
-//     }
-//   const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-//     expiresIn: "7d"
-//   });
-
-//     // 4. Send response
-//     res
-//     .cookie("token", token, {
-//       httpOnly: true,
-//       secure: false,
-//       sameSite: "strict",
-//     })
-//     .json({
-//       success: true,
-//       user,
-//       message: "Login successful"
-//     });
-
-//   } catch (error) {
-//     console.error("Error in loginController:", error);
-//     res.status(500).json({ message: "Server error" });
-//   }
-// };
 export const loginController = async (req, res) => {
-  const { email, password,username } = req.body;
+  const { username } = req.body;
 
   try {
     // 1. Check if user exists
@@ -88,8 +54,6 @@ export const loginController = async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "User does not exist" });
     }
-
-    // (You must verify password if using hashed password — add later)
 
     // 2. Create token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
@@ -102,13 +66,13 @@ export const loginController = async (req, res) => {
       secure: false,
       sameSite: "strict",
     });
-console.log("JWT SECRET:", process.env.JWT_SECRET);
+    // console.log("JWT SECRET:", process.env.JWT_SECRET);
 
     // 4. Send token in JSON + user
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      token,   // 💥 IMPORTANT
+      token,   
       user,    // so your frontend login(data.user, data.token)
     });
 
@@ -135,8 +99,8 @@ export const logoutController = async (req, res) => {
   }
 };
 
-export const meController = async (req,res)=>{
-   res.json({
+export const meController = async (req, res) => {
+  res.json({
     success: true,
     user: req.user
   });

@@ -31,7 +31,7 @@ const FileOptions = ({ code, setCode }) => {
   };
 
   return (
-    <div className="flex gap-3 my-3">
+    <div className="flex gap-3 mx-5 my-3">
 
       {/* Import Button */}
       <button
