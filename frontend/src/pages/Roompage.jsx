@@ -242,7 +242,7 @@ useEffect(() => {
                     <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-medium text-sm">
                       {u.name?.charAt(0).toUpperCase()}
                     </div>
-                    <span className="text-gray-300 font-medium">{u.name}</span>
+                    <span className=" font-medium">{u.name}</span>
                   </div>
                 </div>
               ))}
@@ -314,7 +314,7 @@ useEffect(() => {
         {/* OUTPUT PANEL — FULL WIDTH BOTTOM */}
 
         {(output && isOutput) && (
-          <div className="h-[300px] join border-t border-[#3e3e42] p-4 overflow-auto">
+          <div className="h-[200px] join border-t border-[#3e3e42] p-4 overflow-auto">
 
             <div className="flex items-center gap-2 mb-3">
               <div className="w-2 h-2 rounded-full bg-green-500"></div>

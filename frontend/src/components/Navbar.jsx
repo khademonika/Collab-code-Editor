@@ -64,7 +64,7 @@ const Navbar = () => {
 
                 <button
                   onClick={logout}
-                  className="px-4 cursor-pointer py-2 rounded-lg text-sm font-medium ">
+                  className="px-4 cursor-pointer bg-red-600 text-white py-2 rounded-lg text-sm font-medium ">
                   Logout
                 </button>
 

@@ -63,18 +63,13 @@ const CreateRoom = () => {
 
             </div>
           </div>
-          <div className="flex justify-between mt-6">
+          <div className="flex justify-end gap-5 mt-6">
             <button
               onClick={handleSubmit}
               className="px-5 py-2 bg-green-500 text-white rounded-xl shadow hover:bg-green-600 transition">
               Create Room
             </button>
-            {roomCode && (
-              <div className="mt-6 p-3 bg-gray-100 rounded-xl text-center">
-                <p className="text-gray-700">Share this Room Code:</p>
-                <p className="text-xl font-bold">{roomCode}</p>
-              </div>
-            )}
+          
             <Link to="/">
               <button className="px-5 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition">
                 Cancel

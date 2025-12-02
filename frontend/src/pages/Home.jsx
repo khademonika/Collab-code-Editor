@@ -357,12 +357,13 @@ export default function CollabIDELanding() {
             desc=" Join thousands of developers collaborating in real-time today." />
 
           <button className="group relative px-8 py-4 rounded-xl bg-gradient-to-r from-neon-cyan to-neon-blue text-background font-semibold overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-neon-cyan/50 hover:scale-105">
+           {isLogin ? "" :
             <span className="relative z-10 flex items-center justify-center gap-2">
-              {isLogin ? "" : (<Link to="/login">
-                Start Free
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" /></Link>)}
+              <Link to="/login">
+                Start Free</Link>
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
 
-            </span>
+            </span>}
           </button>
         </div>
       </section>
