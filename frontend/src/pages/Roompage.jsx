@@ -9,10 +9,12 @@ import axios from "axios";
 import toast from "react-hot-toast"
 import FileOptions from "../components/FileOption"
 import { useTheme } from "../context/ThemeContext";
+import { useSettings } from "../context/SettingsContext";
 const RoomPage = () => {
 
   const { roomId } = useParams();
   const { user } = useAuth();
+  const { fontSize } = useSettings();
   const [roomData, setRoomData] = useState(null);
   const [loading, setLoading] = useState(true);
   const socketRef = useRef(null);
@@ -26,11 +28,10 @@ const RoomPage = () => {
   const [output, setOutput] = useState("");
 
   const isEditor = editorUser?.id === user?.id;
-  const [cursorDecorations, setCursorDecorations] = useState([]);
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
-  const {theme} = useTheme()
+  const { theme } = useTheme()
   const foreignCursorDecorations = useRef({}); // { socketId: decorationId }
   const LANGUAGE_MAP = {
     javascript: 63,
@@ -50,7 +51,11 @@ const RoomPage = () => {
     html: 80,
     css: 79
   };
-
+  useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.updateOptions({ fontSize });
+    }
+  }, [fontSize]);
 
   useEffect(() => {
     if (!user) return;
@@ -98,15 +103,16 @@ const RoomPage = () => {
     s.on("cursor-change", onCursor);
 
 
-    s.on("cursor-change", onCursor);
     return () => {
-      // s.emit("release-editor", { roomId });
-      // s.disconnect();
+
+
       s.off("online-users", onOnline);
       s.off("update-code", onCode);
       s.off("language-changed", onLanguage);
       s.off("run-output", onRunOutput);
       s.off("editor-updated", onEditor);
+      s.emit("release-editor", { roomId });
+      //  s.disconnect();
     }
   }, [roomId, user]);
   const handleLanguageChange = (newLang) => {
@@ -127,6 +133,7 @@ const RoomPage = () => {
   const runCode = async () => {
     setIsRunning(true);
     setOutput("Running...");
+    setIsOutput(true)
 
     try {
       const language_id = LANGUAGE_MAP[language];
@@ -143,6 +150,8 @@ const RoomPage = () => {
       );
 
       const result = await response.json();
+      console.log(result.stdout || result.stderr || result.compile_output || "No output");
+
       setOutput(result.stdout || result.stderr || result.compile_output || "No output");
     } catch (error) {
       setOutput(`Error: ${error.message}`);
@@ -151,57 +160,24 @@ const RoomPage = () => {
     }
   };
 
-  function handleForeignCursor(socketId, cursor) {
-    const editor = editorRef.current;
-    const monaco = monacoRef.current;
-    if (!editor || !monaco) return;
-
-    // Remove previous decoration for this user
-    const prevDeco = foreignCursorDecorations.current[socketId] || [];
-
-    const newDeco = editor.deltaDecorations(prevDeco, [
-      {
-        range: new monaco.Range(
-          cursor.lineNumber,
-          cursor.column,
-          cursor.lineNumber,
-          cursor.column
-        ),
-        options: {
-          className: "foreign-cursor",
-          stickiness: monaco.editor.TrackedRangeStickiness.NeverGrowsWhenTyping,
-        },
-      },
-    ]);
-
-    foreignCursorDecorations.current[socketId] = newDeco;
-  }
-
-  const sendCursor = (position) => {
-    if (socketRef.current) socketRef.current.emit("cursor-change", { roomId, cursor: position });
-  };
   const copyBtnRef = useRef(null);
-useEffect(() => {
-  if (monacoRef.current) {
-    monacoRef.current.editor.setTheme(
-      theme === "light" ? "vs-light" : "vs-dark"
-    );
-  }
-}, [theme]);
+  useEffect(() => {
+    if (monacoRef.current) {
+      monacoRef.current.editor.setTheme(
+        theme === "light" ? "vs-light" : "vs-dark"
+      );
+    }
+  }, [theme]);
 
 
 
   return (
-
     <div>
-
       <div className="h-screen pt-24 flex flex-col join">
-
         {/* Main Content - Sidebar + Editor */}
         <div className="flex flex-1 overflow-hidden ">
           {/* Sidebar */}
           {/* Online Users */}
-
           <div className="w-80 join border-r  border-[#3e3e42] flex flex-col p-4">
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
@@ -212,13 +188,11 @@ useEffect(() => {
                 </h2>
               </div>
             </div>
-
             {/* Room Code Box */}
             <div className=" p-3 rounded-lg mb-6 flex items-center justify-between">
               <span className="text-sm flex-1 truncate">
                 Room Code: <span className="text-blue-400">{roomData?.roomCode}</span>
               </span>
-
               <button
                 onClick={() => {
                   navigator.clipboard.writeText(roomData?.roomCode);
@@ -281,36 +255,42 @@ useEffect(() => {
                 className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-medium flex items-center gap-2"
               >
                 <Play size={18} fill="currentColor" />
-                {(isRunning && isOutput) ? "Running..." : "Run Code"}
+                {(isRunning) ? "Running..." : "Run Code"}
               </button>
             </div>
             <FileOptions code={code} setCode={setCode} />
             {/* Editor */}
             <div className="flex-1 join ml-4 my-3 overflow-hidden">
               <Editor
+                height="100%"
                 theme={theme === "light" ? "vs-light" : "vs-dark"}
                 language={language}
                 value={code}
+                onChange={handleCodeChange}
                 onMount={(editor, monaco) => {
                   editorRef.current = editor;
                   monacoRef.current = monaco;
 
-                  // track cursor movements and emit
-                  editor.onDidChangeCursorPosition((e) => {
-                    const pos = e.position; // {lineNumber, column}
-                    sendCursor({ lineNumber: pos.lineNumber, column: pos.column });
-                  });
+                  // Apply font size on load
+                  editor.updateOptions({ fontSize });
+
+
                 }}
-                onChange={handleCodeChange}
-                options={{ readOnly: !isEditor , padding: { top: 12, bottom: 12 },}}
+                options={{
+                  readOnly: !isEditor,
+                  minimap: { enabled: true },
+                  fontSize: fontSize,
+                  fontFamily: "'Fira Code', 'Consolas', 'Courier New', monospace",
+                  lineNumbers: "on",
+                  roundedSelection: true,
+                  scrollBeyondLastLine: false,
+                  automaticLayout: true,
+                  padding: { top: 16, bottom: 16 },
+                }}
               />
-
             </div>
-
           </div>
-
         </div>
-
         {/* OUTPUT PANEL — FULL WIDTH BOTTOM */}
 
         {(output && isOutput) && (

@@ -44,6 +44,17 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
+            {location.pathname.startsWith("/room/") && (
+              <button
+                onClick={() => {
+                  navigate("/");
+                  toast.success("Left the room");
+                }}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition"
+              >
+                Leave Room
+              </button>
+            )}
 
             {/* Auth Buttons */}
             {(!user && !isLogin) ? (
@@ -67,7 +78,12 @@ const Navbar = () => {
                   className="px-4 cursor-pointer bg-red-600 text-white py-2 rounded-lg text-sm font-medium ">
                   Logout
                 </button>
-
+                <Link to="/settings">
+                  <button
+                    className="px-4 py-2 rounded-lg text-sm bg-gray-600 text-white transition-all-smooth font-medium ">
+                    Settings
+                  </button>
+                </Link>
               </div>
             )}
 
@@ -107,7 +123,7 @@ const Navbar = () => {
               </Link>
             ))}
 
-            {(!user && !isLogin ) ? (
+            {(!user && !isLogin) ? (
               <Link to="/login" onClick={() => setMobileOpen(false)}>
                 <button className="w-full cursor-pointer px-4 py-2 border rounded-lg">
                   Login
@@ -146,7 +162,7 @@ const Navbar = () => {
               ) : (
                 <Moon className="text-black" />
               )}
-              {theme==="dark" ? "Light Mode" : "Dark Mode"}
+              {theme === "dark" ? "Light Mode" : "Dark Mode"}
             </button>
           </div>
         )}

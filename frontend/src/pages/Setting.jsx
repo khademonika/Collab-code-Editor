@@ -1,280 +1,214 @@
-import React, { useState, useEffect, createContext, useContext } from 'react';
-import { useTheme } from '../context/ThemeContext';
+// import React, { useState } from 'react';
+// import { useTheme } from '../context/ThemeContext'; // assuming ThemeContext is set up
 
-// --- MOCK THEME CONTEXT (Mimicking shadcn/ui integration) ---
+// export default function Settings() {
+//   const { isDark, toggleTheme } = useTheme();
 
-// const ThemeContext = createContext();
+//   const [language, setLanguage] = useState('javascript');
+//   const [fontSize, setFontSize] = useState(14);
+//   const [tabSize, setTabSize] = useState(2);
+//   const [lineNumbers, setLineNumbers] = useState(true);
+//   const [autosave, setAutosave] = useState(false);
 
-// const useTheme = () => useContext(ThemeContext);
-
-// const ThemeProvider = ({ children }) => {
-//   const [theme, setTheme] = useState('dark'); // Defaulting to 'dark' for dev aesthetic
-
-//   useEffect(() => {
-//     const root = window.document.documentElement;
-//     root.classList.remove('light', 'dark');
-//     root.classList.add(theme);
-//   }, [theme]);
-
-//   const toggleTheme = () => {
-//     setTheme(currentTheme => (currentTheme === 'light' ? 'dark' : 'light'));
+//   const handleSave = () => {
+//     const settings = {
+//       language,
+//       fontSize,
+//       tabSize,
+//       lineNumbers,
+//       autosave,
+//       theme: isDark ? 'dark' : 'light'
+//     };
+//     localStorage.setItem('collabIDE-settings', JSON.stringify(settings));
+//     alert('Settings saved!');
 //   };
 
 //   return (
-//     <ThemeContext.Provider value={{ theme, setTheme, toggleTheme }}>
-//       {children}
-//     </ThemeContext.Provider>
+//     <div className="min-h-screen pt-24 px-8 bg-white dark:bg-slate-900 text-black dark:text-white transition-colors duration-300">
+//       <div className="max-w-3xl mx-auto space-y-8">
+//         <h1 className="text-3xl font-bold text-center">Editor Settings</h1>
+
+//         {/* Language */}
+//         <div>
+//           <label className="block mb-2 font-medium">Default Language</label>
+//           <select
+//             value={language}
+//             onChange={e => setLanguage(e.target.value)}
+//             className="w-full p-2 rounded bg-slate-100 dark:bg-slate-800"
+//           >
+//             <option value="javascript">JavaScript</option>
+//             <option value="python">Python</option>
+//             <option value="cpp">C++</option>
+//             <option value="java">Java</option>
+//             <option value="html">HTML</option>
+//           </select>
+//         </div>
+
+//         {/* Font Size */}
+//         <div>
+//           <label className="block mb-2 font-medium">Font Size: {fontSize}px</label>
+//           <input
+//             type="range"
+//             min="10"
+//             max="24"
+//             value={fontSize}
+//             onChange={e => setFontSize(Number(e.target.value))}
+//             className="w-full"
+//           />
+//         </div>
+
+//         {/* Tab Size */}
+//         <div>
+//           <label className="block mb-2 font-medium">Tab Size</label>
+//           <input
+//             type="number"
+//             min="2"
+//             max="8"
+//             value={tabSize}
+//             onChange={e => setTabSize(Number(e.target.value))}
+//             className="w-full p-2 rounded bg-slate-100 dark:bg-slate-800"
+//           />
+//         </div>
+
+//         {/* Line Numbers */}
+//         <div className="flex items-center gap-4">
+//           <label className="font-medium">Show Line Numbers</label>
+//           <input
+//             type="checkbox"
+//             checked={lineNumbers}
+//             onChange={() => setLineNumbers(!lineNumbers)}
+//           />
+//         </div>
+
+//         {/* Autosave */}
+//         <div className="flex items-center gap-4">
+//           <label className="font-medium">Enable Autosave</label>
+//           <input
+//             type="checkbox"
+//             checked={autosave}
+//             onChange={() => setAutosave(!autosave)}
+//           />
+//         </div>
+
+//         {/* Theme Toggle */}
+//         <div className="flex items-center gap-4">
+//           <label className="font-medium">Theme</label>
+//           <button
+//             onClick={toggleTheme}
+//             className="p-2 rounded bg-slate-200 dark:bg-slate-700"
+//           >
+//             {isDark ? '🌙 Dark' : '☀️ Light'}
+//           </button>
+//         </div>
+
+//         {/* Save Button */}
+//         <button
+//           onClick={handleSave}
+//           className="mt-6 w-full py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+//         >
+//           Save Settings
+//         </button>
+//       </div>
+//     </div>
 //   );
-// };
+// }
 
-// const {theme} = useTheme()
-// --- SHADCN/UI STYLE MIMIC COMPONENTS ---
+import React, { useState } from 'react';
+import { useTheme } from '../context/ThemeContext';
+import { Sun, Moon, Monitor } from 'lucide-react';
 
-// Card Component
-const Card = ({ children, className = '' }) => (
-  <div className={`
-    bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 
-    rounded-xl shadow-lg
-    ${className}
-  `}>
-    {children}
-  </div>
-);
+export default function Settings() {
+  const { isDark, toggleTheme } = useTheme();
+  const [themeOption, setThemeOption] = useState(isDark ? 'dark' : 'light');
+  const [fontSize, setFontSize] = useState(14);
+  const [tabSize, setTabSize] = useState(2);
+  const [wordWrap, setWordWrap] = useState(true);
+  const [autoSave, setAutoSave] = useState(true);
+  const [lineNumbers, setLineNumbers] = useState(true);
 
-// Switch Component (Mimicking shadcn/ui Switch)
-const Switch = ({ checked, onCheckedChange, id }) => (
-  <button
-    id={id}
-    role="switch"
-    aria-checked={checked}
-    onClick={() => onCheckedChange(!checked)}
-    className={`
-      peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 
-      border-transparent transition-colors duration-200 ease-in-out
-      focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 
-      ${checked ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}
-    `}
-  >
-    <span
-      className={`
-        pointer-events-none block h-5 w-5 transform rounded-full bg-white shadow-lg 
-        ring-0 transition duration-200 ease-in-out
-        ${checked ? 'translate-x-5' : 'translate-x-0'}
-      `}
-    />
-  </button>
-);
-
-// Label Component
-const Label = ({ children, htmlFor, className = '' }) => (
-  <label
-    htmlFor={htmlFor}
-    className={`text-sm font-medium leading-none text-gray-700 dark:text-gray-200 ${className}`}
-  >
-    {children}
-  </label>
-);
-
-// Separator Component
-const Separator = ({ className = '' }) => (
-  <div className={`h-px w-full bg-gray-200 dark:bg-gray-800 ${className}`} />
-);
-
-// Select Component (Basic implementation mimicking the look)
-const Select = ({ value, onValueChange, options, placeholder }) => (
-  <select
-    value={value}
-    onChange={(e) => onValueChange(e.target.value)}
-    className="
-      h-10 w-full rounded-lg border border-gray-300 dark:border-gray-700 
-      bg-white dark:bg-gray-800 px-3 py-2 text-sm text-gray-900 dark:text-gray-100
-      ring-offset-white focus:outline-none focus:ring-2 focus:ring-blue-500
-      appearance-none transition duration-150
-    "
-  >
-    {placeholder && <option value="" disabled>{placeholder}</option>}
-    {options.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label}
-      </option>
-    ))}
-  </select>
-);
-
-// RadioGroup Component (Mimicking shadcn/ui RadioGroup)
-const RadioGroup = ({ value, onValueChange, options }) => (
-  <div className="flex space-x-4">
-    {options.map((option) => (
-      <Label key={option.value} className="flex items-center space-x-2 cursor-pointer">
-        <input
-          type="radio"
-          value={option.value}
-          checked={value === option.value}
-          onChange={() => onValueChange(option.value)}
-          className="
-            h-4 w-4 rounded-full border border-gray-300 dark:border-gray-600 
-            text-blue-600 focus:ring-blue-500 dark:ring-offset-gray-900
-            bg-white dark:bg-gray-900 appearance-none 
-            checked:border-[5px] checked:border-blue-600 dark:checked:border-blue-500
-          "
-        />
-        <span>{option.label}</span>
-      </Label>
-    ))}
-  </div>
-);
-
-// Setting Item Wrapper
-const SettingItem = ({ title, description, control }) => (
-  <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center py-4">
-    <div className="mb-2 sm:mb-0 sm:w-2/3">
-      <h4 className="text-md font-medium text-foreground">{title}</h4>
-      <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{description}</p>
-    </div>
-    <div className="w-full sm:w-1/3 flex justify-start sm:justify-end">
-      {control}
-    </div>
-  </div>
-);
-
-
-// --- MAIN SETTINGS CONTENT (Consumes the context) ---
-
-const SettingsContent = () => {
-  // Now safely consumes context as it will be rendered within ThemeProvider
-  const { theme, toggleTheme } = useTheme();
-
-  // State for settings
-  const [defaultLanguage, setDefaultLanguage] = useState('JavaScript');
-  const [editorSize, setEditorSize] = useState('Medium');
-
-  const languageOptions = [
-    { value: 'JavaScript', label: 'JavaScript' },
-    { value: 'Python', label: 'Python' },
-    { value: 'C++', label: 'C++' },
-    { value: 'Java', label: 'Java' },
-  ];
-
-  const sizeOptions = [
-    { value: 'Small', label: 'Small' },
-    { value: 'Medium', label: 'Medium' },
-    { value: 'Large', label: 'Large' },
-  ];
-
-  const handleSave = () => {
-    const currentSettings = {
-      theme,
-      defaultLanguage,
-      editorSize,
-    };
-    console.log('Saving Settings:', currentSettings);
-    // NOTE: Cannot use window.alert/confirm in Canvas environment, replaced with a safer console log simulation.
-    console.log('Settings saved successfully!');
+  const handleThemeChange = (option) => {
+    setThemeOption(option);
+    if (option === 'light') toggleTheme(false);
+    if (option === 'dark') toggleTheme(true);
   };
 
   return (
-      <div className="min-h-screen  bg-gray-50 dark:bg-gray-950 transition-colors duration-300 p-4 sm:p-8 font-sans">
-        
-        {/* Centered Content Container */}
-        <div className="max-w-3xl mx-auto space-y-8 mt-12">
-          
-          {/* Header */}
-          <div className="pt-4 pb-2">
-            <h1 className="text-3xl font-bold text-gray-950 dark:text-gray-50">
-              Settings
-            </h1>
-            <p className="text-gray-500 dark:text-gray-400 mt-1">
-              Configure your personal workspace and application preferences.
-            </p>
+    <div className="min-h-screen pt-24 pb-24 px-6 bg-white dark:bg-slate-900 text-black dark:text-white transition-colors duration-300">
+      <div className="max-w-3xl mx-auto space-y-10">
+
+        {/* Appearance */}
+        <section>
+          <h2 className="text-2xl font-bold mb-2">Appearance</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-4">Customize how CollabIDE looks and feels.</p>
+          <div className="flex gap-4">
+            {['light', 'dark', 'system'].map((option) => (
+              <button
+                key={option}
+                onClick={() => handleThemeChange(option)}
+                disabled={option === 'system'}
+                className={`flex items-center gap-2 px-4 py-2 rounded-lg border ${
+                  themeOption === option ? 'bg-slate-800 text-white border-cyan-500' : 'bg-slate-100 dark:bg-slate-800'
+                } ${option === 'system' ? 'opacity-50 cursor-not-allowed' : ''}`}
+              >
+                {option === 'light' && <Sun className="w-5 h-5" />}
+                {option === 'dark' && <Moon className="w-5 h-5" />}
+                {option === 'system' && <Monitor className="w-5 h-5" />}
+                {option.charAt(0).toUpperCase() + option.slice(1)}
+              </button>
+            ))}
           </div>
+        </section>
 
-          {/* Settings Card Wrapper */}
-          <Card className="p-6 sm:p-8 ">
+        {/* Editor Preferences */}
+        <section>
+          <h2 className="text-2xl font-bold mb-2">Editor Preferences</h2>
+          <p className="text-slate-500 dark:text-slate-400 mb-4">Configure your coding environment.</p>
 
-            {/* --- 1. Theme Toggle (Appearance) --- */}
-            <section>
-              <h2 className="text-2xl font-semibold text-gray-950 dark:text-gray-50 mb-4">
-                Appearance
-              </h2>
-              <SettingItem
-                title="Appearance"
-                description="Choose your preferred color theme for the interface."
-                control={
-                  <div className="flex items-center space-x-3">
-                    <Label htmlFor="theme-toggle" className="sr-only">Toggle Theme</Label>
-                    <Switch
-                      id="theme-toggle"
-                      checked={theme === 'dark'}
-                      onCheckedChange={toggleTheme}
-                    />
-                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200 capitalize">
-                      {theme}
-                    </span>
-                  </div>
-                }
-              />
-            </section>
-            
-            <Separator />
+          <div className="space-y-4">
+            <div>
+              <label className="block font-medium mb-1">Font Size: {fontSize}px</label>
+              <input type="range" min="10" max="24" value={fontSize} onChange={(e) => setFontSize(e.target.value)} className="w-full" />
+            </div>
 
-            {/* --- 2. Default Language --- */}
-            <section>
-              <h2 className="text-2xl font-semibold text-gray-950 dark:text-gray-50 mb-4">
-                Editor Defaults
-              </h2>
-              <SettingItem
-                title="Default Language"
-                description="Your preferred coding language for new rooms and projects."
-                control={
-                  <Select
-                    value={defaultLanguage}
-                    onValueChange={setDefaultLanguage}
-                    options={languageOptions}
-                    placeholder="Select a language"
-                  />
-                }
-              />
-            
-              <Separator className="my-4" />
+            <div>
+              <label className="block font-medium mb-1">Tab Size: {tabSize} spaces</label>
+              <input type="number" min="2" max="8" value={tabSize} onChange={(e) => setTabSize(+e.target.value)} className="w-full p-2 rounded bg-slate-100 dark:bg-slate-800" />
+            </div>
 
-              {/* --- 3. Editor Default Size --- */}
-              <SettingItem
-                title="Editor Size"
-                description="Choose the default size setting for the editor panel in new rooms."
-                control={
-                  <RadioGroup
-                    value={editorSize}
-                    onValueChange={setEditorSize}
-                    options={sizeOptions}
-                  />
-                }
-              />
-            </section>
-            
-          </Card>
+            <div className="flex items-center justify-between">
+              <span>Word Wrap</span>
+              <input type="checkbox" checked={wordWrap} onChange={() => setWordWrap(!wordWrap)} />
+            </div>
 
-          {/* Action Button */}
-          <div className="flex justify-end pt-4">
-            <button
-              onClick={handleSave}
-              className="
-                w-full sm:w-auto px-8 py-3 text-lg font-semibold
-                rounded-xl transition duration-200 ease-in-out
-                bg-gray-900 text-white dark:bg-gray-50 dark:text-gray-900
-                shadow-lg hover:shadow-xl hover:opacity-90 focus:outline-none focus:ring-4 focus:ring-blue-500/50
-              "
-            >
-              Save Preferences
-            </button>
+            <div className="flex items-center justify-between">
+              <span>Auto Save</span>
+              <input type="checkbox" checked={autoSave} onChange={() => setAutoSave(!autoSave)} />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <span>Show Line Numbers</span>
+              <input type="checkbox" checked={lineNumbers} onChange={() => setLineNumbers(!lineNumbers)} />
+            </div>
           </div>
+        </section>
 
-        </div>
+        {/* Data Management */}
+        <section>
+          <h2 className="text-2xl font-bold mb-2">Data Management</h2>
+          <div className="flex gap-4 flex-wrap">
+            <button className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Export Data</button>
+            <button className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Import Data</button>
+            <button className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700">Sync Settings</button>
+          </div>
+        </section>
+
+        {/* Danger Zone */}
+        <section className="mt-8 p-6 bg-red-900/20 border border-red-700 rounded-lg">
+          <h2 className="text-xl font-semibold text-red-400 mb-2">Danger Zone</h2>
+          <p className="text-red-300 mb-4">These actions cannot be undone. Please be careful.</p>
+          <button className="px-4 py-2  bg-red-600 text-white rounded hover:bg-red-700">Delete Account</button>
+        </section>
       </div>
+    </div>
   );
-};
-
-// --- MAIN SETTINGS PAGE COMPONENT (The exported wrapper) ---
-
-
-// To make this runnable in the Canvas environment, we export the main component wrapped in its provider.
-export default SettingsContent;
+}

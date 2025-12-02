@@ -13,6 +13,8 @@ import RoomPage from './pages/Roompage'
 import JoinRoom from './pages/JoinRoom'
 import { Toaster } from "react-hot-toast";
 import SettingsContent from './pages/Setting'
+import Settings from './pages/Setting'
+import { SettingsProvider } from './context/SettingsContext'
 const App = () => {
   const fetch = async () => {
     const data = await axios.get("/api/auth")
@@ -30,20 +32,20 @@ const App = () => {
           <BrowserRouter>
            <Toaster position="top-center" />
             <Navbar />
-
+<SettingsProvider>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path='/login' element={<LoginPage />} />
               <Route path='/about' element={<About />} />
 
               <Route path='/create-room' element={<CreateRoomModal />} />
-              <Route path='/active-room' element={<SettingsContent />} />
+              <Route path='/settings' element={<Settings />} />
               <Route path="/room/:roomId" element={<RoomPage />} />
               <Route path='/join-room' element={<JoinRoom />} />
 
 
             </Routes>
-
+</SettingsProvider>
           </BrowserRouter>
         </RoomProvider>
       </AuthProvider>
