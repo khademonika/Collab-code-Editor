@@ -127,19 +127,7 @@ export default function CollabIDELanding() {
               isLogin ? (<Link to="/create-room">Create a room</Link>) : (<Link to="/login">Start coding free</Link>)
             }
           </button>
-          <button
-            className="px-8 py-4 rounded-lg font-semibold text-lg transition-all flex items-center gap-2"
-            style={{
-              background: "var(--btn-bg)",
-              border: "1px solid var(--btn-border)",
-              color: "var(--btn-text)",
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.background = "var(--btn-hover)")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "var(--btn-bg)")}
-          >
-            <Play className="w-5 h-5" />
-            Watch Demo
-          </button>
+        
 
         </div>
  
@@ -224,8 +212,8 @@ export default function CollabIDELanding() {
               ))}
             </div>
 
-            <div className="relative">
-              <div className="p-8 rounded-2xl glass-effect border border-neon-cyan/30 bg-gradient-to-br from-white/10 to-white/5 shadow-2xl shadow-neon-cyan/20 hover:shadow-neon-cyan/30 transition-all duration-300">
+            <div className="relative hidden sm:block ">
+              <div className="p-8 rounded-2xl  glass-effect border border-neon-cyan/30 bg-gradient-to-br from-white/10 to-white/5 shadow-2xl shadow-neon-cyan/20 hover:shadow-neon-cyan/30 transition-all duration-300">
                 <div className="space-y-4">
                   <div className="h-2 bg-white/10 rounded-full overflow-hidden">
                     <div className="h-full w-3/4 bg-gradient-to-r from-neon-cyan to-neon-blue rounded-full animate-shine" />

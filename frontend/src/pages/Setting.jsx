@@ -116,16 +116,12 @@
 import React, { useState } from 'react';
 import { useTheme } from '../context/ThemeContext';
 import { Sun, Moon, Monitor } from 'lucide-react';
+import { useSettings } from '../context/SettingsContext';
 
 export default function Settings() {
   const { isDark, toggleTheme } = useTheme();
   const [themeOption, setThemeOption] = useState(isDark ? 'dark' : 'light');
-  const [fontSize, setFontSize] = useState(14);
-  const [tabSize, setTabSize] = useState(2);
-  const [wordWrap, setWordWrap] = useState(true);
-  const [autoSave, setAutoSave] = useState(true);
-  const [lineNumbers, setLineNumbers] = useState(true);
-
+ const { fontSize, setFontSize, tabSize, setTabSize, wordWrap, setWordWrap, lineNumbers, setLineNumbers } = useSettings();
   const handleThemeChange = (option) => {
     setThemeOption(option);
     if (option === 'light') toggleTheme(false);
@@ -180,10 +176,6 @@ export default function Settings() {
               <input type="checkbox" checked={wordWrap} onChange={() => setWordWrap(!wordWrap)} />
             </div>
 
-            <div className="flex items-center justify-between">
-              <span>Auto Save</span>
-              <input type="checkbox" checked={autoSave} onChange={() => setAutoSave(!autoSave)} />
-            </div>
 
             <div className="flex items-center justify-between">
               <span>Show Line Numbers</span>

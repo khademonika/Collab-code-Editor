@@ -12,9 +12,9 @@ import { RoomProvider } from './context/RoomContext'
 import RoomPage from './pages/Roompage'
 import JoinRoom from './pages/JoinRoom'
 import { Toaster } from "react-hot-toast";
-import SettingsContent from './pages/Setting'
 import Settings from './pages/Setting'
 import { SettingsProvider } from './context/SettingsContext'
+import { SocketProvider } from './context/SocketContext'
 const App = () => {
   const fetch = async () => {
     const data = await axios.get("/api/auth")
@@ -24,15 +24,16 @@ const App = () => {
   useEffect(() => {
     fetch();
   }, []);
-
+// "U25BX8"
   return (
     <ThemeProvider>
       <AuthProvider>
         <RoomProvider>
+          <SettingsProvider>
+             <SocketProvider> 
           <BrowserRouter>
            <Toaster position="top-center" />
             <Navbar />
-<SettingsProvider>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path='/login' element={<LoginPage />} />
@@ -45,8 +46,10 @@ const App = () => {
 
 
             </Routes>
-</SettingsProvider>
+
           </BrowserRouter>
+           </SocketProvider>
+          </SettingsProvider>
         </RoomProvider>
       </AuthProvider>
     </ThemeProvider>
