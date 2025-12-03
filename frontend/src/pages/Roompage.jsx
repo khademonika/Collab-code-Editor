@@ -49,7 +49,29 @@ const RoomPage = () => {
     html: 80,
     css: 79
   };
+const leaveRoom = async () => {
+    try {
+      // notify server we are leaving so others can be informed
+      if (socketRef.current) {
+        socketRef.current.emit('leave-room', { roomId, user });
+      }
+    } catch (e) {
+      console.error('leaveRoom emit error', e);
+    }
 
+    // local cleanup: remove our decorations/styles
+    try {
+      if (editorRef.current) {
+        // remove all remote decorations owned by this user (if any)
+        const safeId = sanitizeId(user?.id || user?.name || 'me');
+        const style = document.getElementById(`user-style-${safeId}`);
+        if (style) style.remove();
+      }
+    } catch (e) {}
+
+    // navigate back to home
+    try { navigate('/'); } catch (e) { window.location.href = '/'; }
+  };
   useEffect(() => {
     if (editorRef.current) {
       editorRef.current.updateOptions({
@@ -272,6 +294,12 @@ useEffect(() => {
               >
                 <Play size={18} fill="currentColor" />
                 {(isRunning) ? "Running..." : "Run Code"}
+              </button>
+               <button
+                onClick={leaveRoom}
+                className="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition"
+              >
+                Leave Room
               </button>
             </div>
             <FileOptions code={code} setCode={setCode} />

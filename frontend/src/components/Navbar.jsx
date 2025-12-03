@@ -44,20 +44,8 @@ const Navbar = () => {
                 {link.name}
               </Link>
             ))}
-            {location.pathname.startsWith("/room/") && (
-              <button
-                onClick={() => {
-                  navigate("/");
-                  toast.success("Left the room");
-                }}
-                className="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition"
-              >
-                Leave Room
-              </button>
-            )}
-
             {/* Auth Buttons */}
-            {(!user && !isLogin) ? (
+            {!user ? (
               <Link to="/login">
                 <button
                   className="px-4 py-2 cursor-pointer rounded-lg text-sm font-medium border">

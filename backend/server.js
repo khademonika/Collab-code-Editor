@@ -103,35 +103,52 @@ io.on("connection", (socket) => {
 
   //on leaving the room
 
-  // socket.on("leave-room", ({ roomId, user }) => {
-  //   socket.leave(roomId);
+ 
+// socket.on("leave-room", ({ roomId, user }) => {
+//   if (!roomId || !user || !rooms[roomId]) return;
 
-  //   if (rooms[roomId]) {
-  //     rooms[roomId] = rooms[roomId].filter(u => u.id !== user.id);
-  //     io.to(roomId).emit("online-users", rooms[roomId]);  // update others
-  //   }
-  //   if (rooms[roomId].length === 0) delete rooms[roomId];
-  //   console.log(`${user.name} left`);
-  // });
-  // socket.on("leave-room", ({ roomId, user }) => {
-  //   if (rooms[roomId]) {
-  //     rooms[roomId] = rooms[roomId].filter(u => u.id !== user.id);
-  //     io.to(roomId).emit("online-users", rooms[roomId]); // 🔥 update UI
-  //   }
-  //   socket.leave(roomId);
-  // });
-socket.on("leave-room", ({ roomId, user }) => {
-  if (!roomId || !user || !rooms[roomId]) return;
+//   // remove user from room
+//   rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== user.id);
 
-  // remove user from room
-  rooms[roomId].users = rooms[roomId].users.filter(u => u.id !== user.id);
+//   // notify all users in room
+//   io.to(roomId).emit("online-users", rooms[roomId].users);
 
-  // notify all users in room
-  io.to(roomId).emit("online-users", rooms[roomId].users);
+//   socket.leave(roomId);
+// });
+ socket.on("leave-room", ({ roomId, user }) => {
+    try {
+      if (!roomId || !rooms[roomId]) return;
+      // remove entries that match this socket id OR match the leaving user's id/name (when provided)
+      const leavingId = user && (user.id || user._id);
+      const leavingName = user && (user.username || user.name);
+      rooms[roomId].users = rooms[roomId].users.filter((u) => {
+        // remove if socket matches
+        if (u.socket === socket.id) return false;
+        // remove if id provided and matches
+        if (leavingId && u.id && String(u.id) === String(leavingId)) return false;
+        // remove if name provided and matches
+        if (leavingName && u.name && u.name === leavingName) return false;
+        // otherwise keep
+        return true;
+      });
 
-  socket.leave(roomId);
-});
+      // if the leaving socket was the editor, release
+      if (rooms[roomId].editor && rooms[roomId].editor.socket === socket.id) {
+        rooms[roomId].editor = null;
+        io.to(roomId).emit("editor-updated", null);
+      }
 
+      // notify others with a user-left event and updated list
+      const leavingPayload = { id: user?.id, name: user?.username || user?.name || 'Unknown', roomId };
+      socket.to(roomId).emit("user-left", leavingPayload);
+      io.to(roomId).emit("online-users", rooms[roomId].users);
+
+      // make this socket leave the room
+      try { socket.leave(roomId); } catch (e) {}
+    } catch (e) {
+      console.error('leave-room handler error', e);
+    }
+  });
   // socket.on("disconnect", () => {
   //   const roomId = socket.roomId;
   //   if (!roomId || !rooms[roomId]) return;
@@ -164,3 +181,4 @@ socket.on("disconnect", () => {
 
 
 server.listen(5000, () => console.log("Server running on 5000"));
+
