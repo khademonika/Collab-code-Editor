@@ -14,7 +14,8 @@ const RoomPage = () => {
 
   const { roomId } = useParams();
   const { user } = useAuth();
-  const { fontSize, tabSize, wordWrap, lineNumbers } = useSettings();
+  // const { fontSize } = useSettings();
+const { fontSize, tabSize, wordWrap, lineNumbers } = useSettings();
   const [roomData, setRoomData] = useState(null);
   const [loading, setLoading] = useState(true);
   const socketRef = useRef(null);
@@ -24,6 +25,7 @@ const RoomPage = () => {
   const [language, setLanguage] = useState("javascript");
   const [isRunning, setIsRunning] = useState(false);
   const [isOutput, setIsOutput] = useState(true);
+
   const [output, setOutput] = useState("");
 
   const isEditor = editorUser?.id === user?.id;
@@ -31,6 +33,7 @@ const RoomPage = () => {
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
   const { theme } = useTheme()
+  const foreignCursorDecorations = useRef({}); // { socketId: decorationId }
   const LANGUAGE_MAP = {
     javascript: 63,
     typescript: 74,
@@ -49,7 +52,24 @@ const RoomPage = () => {
     html: 80,
     css: 79
   };
-const leaveRoom = async () => {
+    
+useEffect(() => {
+  axios.get("/api/auth/verify", { withCredentials: true })
+    .then(res => setUser(res.data.user))
+    .catch(() => logout());
+}, []);
+
+    useEffect(() => {
+    if (editorRef.current) {
+      editorRef.current.updateOptions({
+        fontSize,
+        tabSize,
+        wordWrap: wordWrap ? "on" : "off",
+        lineNumbers: lineNumbers ? "on" : "off",
+      });
+    }
+  }, [fontSize, tabSize, wordWrap, lineNumbers]);
+   const leaveRoom = async () => {
     try {
       // notify server we are leaving so others can be informed
       if (socketRef.current) {
@@ -74,30 +94,18 @@ const leaveRoom = async () => {
   };
   useEffect(() => {
     if (editorRef.current) {
-      editorRef.current.updateOptions({
-        fontSize,
-        tabSize,
-        wordWrap: wordWrap ? "on" : "off",
-        lineNumbers: lineNumbers ? "on" : "off",
-      });
+      editorRef.current.updateOptions({ fontSize });
     }
-  }, [fontSize, tabSize, wordWrap, lineNumbers]);
-
-  
-useEffect(() => {
-  axios.get("/api/auth/verify", { withCredentials: true })
-    .then(res => setUser(res.data.user))
-    .catch(() => logout());
-}, []);
+  }, [fontSize]);
 
   useEffect(() => {
     if (!user) return;
-
     const fetchRoom = async () => {
       try {
         const res = await axios.get(`/api/room/${roomId}`, { withCredentials: true });
         setRoomData(res.data);
         console.log(res.data);
+
       } catch (err) {
         console.log(err);
       } finally {
@@ -106,8 +114,6 @@ useEffect(() => {
     };
 
     fetchRoom();
-
-    // initialize socket only once
     if (!socketRef.current) {
       socketRef.current = io("http://localhost:5000", {
         transports: ["websocket"],
@@ -115,13 +121,12 @@ useEffect(() => {
       });
     }
 
-
     const s = socketRef.current;
+    //for debugging
     s.on("connect", () => console.log("socket connected:", s.id));
     s.on("connect_error", (err) => console.error("connect_error", err));
 
     s.emit("join-room", { roomId, user });
-
     // listeners
     const onOnline = (users) => setOnlineUsers(users || []);
     const onCode = (serverCode) => setCode(serverCode ?? "");
@@ -137,19 +142,33 @@ useEffect(() => {
     s.on("run-output", onRunOutput);
     s.on("editor-updated", onEditor);
     s.on("cursor-change", onCursor);
+
+
     return () => {
+
 
       s.off("online-users", onOnline);
       s.off("update-code", onCode);
       s.off("language-changed", onLanguage);
       s.off("run-output", onRunOutput);
       s.off("editor-updated", onEditor);
-
-      s.emit("leaveRoom", { roomId, user });
-      // s.disconnect();   // 🔥 make sure to disconnect
-    };
-
+      s.emit("release-editor", { roomId });
+      //  s.disconnect();
+    }
   }, [roomId, user]);
+  const handleLanguageChange = (newLang) => {
+    setLanguage(newLang);
+    if (socketRef.current) socketRef.current.emit("language-change", { roomId, language: newLang });
+  };
+  const handleCodeChange = (value) => {
+    if (!isEditor) return;
+    setCode(value);
+    localStorage.setItem(`code_${roomId}`, value);
+    // if (socketRef) socketRef.emit("code-change", { roomId, code: value });
+    if (socketRef.current) socketRef.current.emit("code-change", { roomId, code: value });
+
+  };
+
 
 
   const runCode = async () => {
@@ -190,22 +209,6 @@ useEffect(() => {
       );
     }
   }, [theme]);
-  // useEffect(() => {
-  //   const socketInstance = io("http://localhost:5000"); // or your URL
-  //   socketRef.current = socketInstance;
-
-  //   socketInstance.emit("joinRoom", { roomId, user });
-
-  //   socketInstance.on("roomUsers", (users) => {
-  //     setUsers(users);
-  //   });
-
-  //   // ------- cleanup runs when leave page ----------
-  //   return () => {
-  //     socketInstance.emit("leaveRoom", { roomId, user });
-  //     socketInstance.disconnect(); // <--- THIS FIXES DUPLICATION
-  //   };
-  // }, [roomId, user]);
 
 
 
@@ -295,7 +298,7 @@ useEffect(() => {
                 <Play size={18} fill="currentColor" />
                 {(isRunning) ? "Running..." : "Run Code"}
               </button>
-               <button
+                <button
                 onClick={leaveRoom}
                 className="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition"
               >
@@ -305,58 +308,40 @@ useEffect(() => {
             <FileOptions code={code} setCode={setCode} />
             {/* Editor */}
             <div className="flex-1 join ml-4 my-3 overflow-hidden">
-              {/* <Editor
+              <Editor
                 height="100%"
                 theme={theme === "light" ? "vs-light" : "vs-dark"}
                 language={language}
                 value={code}
                 onChange={handleCodeChange}
+                  
                 onMount={(editor, monaco) => {
                   editorRef.current = editor;
                   monacoRef.current = monaco;
 
                   // Apply font size on load
-                  editor.updateOptions({ fontSize });
+                   editor.updateOptions({
+                    fontSize,
+                    tabSize,
+                    wordWrap: wordWrap ? "on" : "off",
+                    lineNumbers: lineNumbers ? "on" : "off",
+                  });
+          
 
 
                 }}
                 options={{
                   readOnly: !isEditor,
                   minimap: { enabled: true },
-                  fontSize: {fontSize},
+                  fontSize: fontSize,
                   fontFamily: "'Fira Code', 'Consolas', 'Courier New', monospace",
                   lineNumbers: "on",
                   roundedSelection: true,
                   scrollBeyondLastLine: false,
                   automaticLayout: true,
                   padding: { top: 16, bottom: 16 },
-                }} */}
-              {/* /> */}
-              <Editor
-                height="100%"
-                theme={theme === "light" ? "vs-light" : "vs-dark"}
-                language={language}
-                value={code}
-                onMount={(editor, monaco) => {
-                  editorRef.current = editor;
-
-                  // initial settings
-                  editor.updateOptions({
-                    fontSize,
-                    tabSize,
-                    wordWrap: wordWrap ? "on" : "off",
-                    lineNumbers: lineNumbers ? "on" : "off",
-                  });
-                }}
-                options={{
-                  readOnly: !isEditor,
-                  minimap: { enabled: true },
-                  fontSize: fontSize,         // <-- correct way
-                  fontFamily: "'Fira Code', monospace",
-                  padding: { top: 16, bottom: 16 },
                 }}
               />
-
             </div>
           </div>
         </div>
