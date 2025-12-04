@@ -81,7 +81,7 @@ export const RoomProvider = ({ children }) => {
 const createRoom = async (roomName, description,roomCode) => {
   try {
     console.log("Using token:", token);
-    // if(!token) console.log("Token Missing!");
+    if(!token) console.log("Token Missing!");
 // const token = localStorage.getItem("token");
 
     const res = await axios.post(
@@ -93,6 +93,8 @@ const createRoom = async (roomName, description,roomCode) => {
         },
       }
     );
+    // console.log({ Authorization: `Bearer ${token}`});
+    
   //  window.location.href =`/room/${res.data._id}`
     return res.data
   } catch (err) {
