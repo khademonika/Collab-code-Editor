@@ -289,7 +289,8 @@ useEffect(() => {
                   <option value="css">CSS</option>
                 </select>
               </div>
-
+<div className="flex justify-end gap-3">
+  
               <button
                 onClick={runCode}
                 disabled={isRunning || !isEditor}
@@ -304,6 +305,7 @@ useEffect(() => {
               >
                 Leave Room
               </button>
+</div>
             </div>
             <FileOptions code={code} setCode={setCode} />
             {/* Editor */}
