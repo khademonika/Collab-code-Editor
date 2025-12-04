@@ -35,7 +35,7 @@ const Navbar = () => {
           </div>
 
           {/* Desktop Links */}
-          <div className="hidden md:flex cursor-pointer items-center gap-8">
+          {location.pathname.startsWith("/room/") ?  '':  <div className="hidden md:flex cursor-pointer items-center gap-8">
             {links.map((link, i) => (
               <Link
                 key={i}
@@ -86,7 +86,8 @@ const Navbar = () => {
               )}
             </button>
           </div>
-
+}
+         
           {/* Mobile Menu Button */}
           <button
             className="md:hidden"
