@@ -44,9 +44,9 @@ const CreateRoom = () => {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen join  flex justify-center items-center bg-gray-100 px-4">
-        <div className="bg-white shadow-xl rounded-3xl p-8 w-full max-w-md">
-          <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
+      <div className="flex join  justify-center items-center h-screen">
+        <div className="join card shadow-xl rounded-3xl p-8 w-full max-w-md">
+          <h1 className="text-2xl font-bold text-center mb-6">
             Create a Room
           </h1>
           <div className="flex flex-col gap-4 ">
@@ -56,7 +56,7 @@ const CreateRoom = () => {
               <InputCompo fun={""} value={roomCode} placeholder="Room Code" />
               <button
                 onClick={generateRoomCode}
-                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600">
+                className="px-4 py-2 bg-blue-500  rounded-xl hover:bg-blue-600">
                 Generate
               </button>
 
