@@ -4,7 +4,7 @@ import Editor from "@monaco-editor/react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { useAuth } from "../context/AuthContext";
-import { Play, Users, Code2 } from "lucide-react";
+import { Play, Users, Code2, Sun, Moon } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast"
 import FileOptions from "../components/FileOption"
@@ -32,8 +32,72 @@ const { fontSize, tabSize, wordWrap, lineNumbers } = useSettings();
 
   const editorRef = useRef(null);
   const monacoRef = useRef(null);
-  const { theme } = useTheme()
+  const { theme, toggleTheme } = useTheme()
   const foreignCursorDecorations = useRef({}); // { socketId: decorationId }
+ 
+//  yha se change kiya h
+  // adjustable sidebar width (persist per room)
+  const [sidebarWidth, setSidebarWidth] = useState(() => {
+    try {
+      const v = localStorage.getItem(`sidebarWidth_${roomId}`);
+      return v ? parseInt(v, 10) : 320;
+    } catch (e) { return 320; }
+  });
+  const draggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startWidthRef = useRef(sidebarWidth);
+
+  const startDrag = (e) => {
+    e.preventDefault();
+    draggingRef.current = true;
+    startXRef.current = (e.clientX ?? (e.touches && e.touches[0].clientX)) || 0;
+    startWidthRef.current = sidebarWidth;
+    window.addEventListener('mousemove', onDrag);
+    window.addEventListener('mouseup', stopDrag);
+    window.addEventListener('touchmove', onDrag, { passive: false });
+    window.addEventListener('touchend', stopDrag);
+  };
+
+  const onDrag = (e) => {
+    if (!draggingRef.current) return;
+    e.preventDefault();
+    const clientX = (e.clientX ?? (e.touches && e.touches[0].clientX)) || 0;
+    const dx = clientX - startXRef.current;
+    const newWidth = Math.max(200, Math.min(640, startWidthRef.current + dx));
+    setSidebarWidth(newWidth);
+  };
+
+  const stopDrag = () => {
+    if (!draggingRef.current) return;
+    draggingRef.current = false;
+    try { localStorage.setItem(`sidebarWidth_${roomId}`, String(sidebarWidth)); } catch (e) {}
+    window.removeEventListener('mousemove', onDrag);
+    window.removeEventListener('mouseup', stopDrag);
+    window.removeEventListener('touchmove', onDrag);
+    window.removeEventListener('touchend', stopDrag);
+  };
+
+  // collapsed state (persisted)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try { return localStorage.getItem(`sidebarCollapsed_${roomId}`) === '1'; } catch (e) { return false; }
+  });
+  const prevWidthRef = useRef(sidebarWidth || 320);
+  const toggleSidebar = () => {
+    if (sidebarCollapsed) {
+      // expand
+      const restore = prevWidthRef.current || 320;
+      setSidebarWidth(restore);
+      setSidebarCollapsed(false);
+      try { localStorage.setItem(`sidebarCollapsed_${roomId}`, '0'); } catch (e) {}
+    } else {
+      // collapse
+      prevWidthRef.current = sidebarWidth || 320;
+      setSidebarCollapsed(true);
+      try { localStorage.setItem(`sidebarCollapsed_${roomId}`, '1'); } catch (e) {}
+    }
+  };
+
+  // yha tk
   const LANGUAGE_MAP = {
     javascript: 63,
     typescript: 74,
@@ -219,7 +283,8 @@ useEffect(() => {
         <div className="flex flex-1 overflow-hidden ">
           {/* Sidebar */}
           {/* Online Users */}
-          <div className="w-80 join border-r  border-[#3e3e42] flex flex-col p-4">
+          {!sidebarCollapsed && (
+            <div className="join border-r  border-[#3e3e42] flex flex-col p-4" style={{ width: sidebarWidth, minWidth: 200, maxWidth: 640 }}>
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -247,7 +312,7 @@ useEffect(() => {
             </div>
 
             {/* User List */}
-            <div className="space-y-2 overflow-y-auto pr-2">
+            <div className="space-y-2 overflow-y-auto pr-2" style={{ maxHeight: 'calc(100vh - 220px)' }}>
               {onlineUsers.map((u) => (
                 <div
                   key={u.id}
@@ -262,8 +327,26 @@ useEffect(() => {
                 </div>
               ))}
             </div>
-          </div>
-
+            </div>
+          )}
+            {/* changed */}
+          {/* resizer (hidden when collapsed) */}
+          {!sidebarCollapsed && (
+            <div
+              role="separator"
+              aria-orientation="vertical"
+              onMouseDown={startDrag}
+              onTouchStart={startDrag}
+              className="flex items-center justify-center"
+              style={{ width: 12, cursor: 'col-resize', userSelect: 'none' }}
+            >
+              <div
+                className="rounded-full bg-gray-400/40 hover:bg-gray-400"
+                style={{ width: 4, height: '60%', transition: 'background 120ms' }}
+              />
+            </div>
+          )}
+{/* yha th */}
           {/* EDITOR SECTION */}
           <div className="flex-1 flex join flex-col overflow-hidden">
             {/* Top toolbar */}
@@ -289,28 +372,36 @@ useEffect(() => {
                   <option value="css">CSS</option>
                 </select>
               </div>
-<div className="flex justify-end gap-3">
+<div className="flex justify-end gap-3 items-center">
   
               <button
                 onClick={runCode}
                 disabled={isRunning || !isEditor}
-                className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-medium flex items-center gap-2"
+                className="px-5 py-2 rounded-lg bg-green-600 hover:bg-green-700 active:bg-green-800 disabled:bg-gray-700 disabled:cursor-not-allowed text-white font-medium  flex items-center gap-2"
               >
                 <Play size={18} fill="currentColor" />
                 {(isRunning) ? "Running..." : "Run Code"}
               </button>
                 <button
                 onClick={leaveRoom}
-                className="px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition"
+                className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition"
               >
                 Leave Room
+              </button>
+              <button
+                onClick={() => toggleTheme?.()}
+                className="px-3 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition flex items-center gap-2"
+                title="Toggle theme"
+              >
+                {theme === 'dark' ? <Sun className="w-5 h-5 text-amber-300" /> : <Moon className="w-5 h-5 text-white"/>}
               </button>
 </div>
             </div>
             <FileOptions code={code} setCode={setCode} />
             {/* Editor */}
-            <div className="flex-1 join ml-4 my-3 overflow-hidden">
+            <div className="flex-1 rounded-lg join ml-4 my-3 overflow-hidden pr-4 ">
               <Editor
+                wrapperClassName="rounded-lg overflow-hidden"
                 height="100%"
                 theme={theme === "light" ? "vs-light" : "vs-dark"}
                 language={language}
@@ -328,6 +419,16 @@ useEffect(() => {
                     wordWrap: wordWrap ? "on" : "off",
                     lineNumbers: lineNumbers ? "on" : "off",
                   });
+
+                  // Ensure the Monaco editor DOM has rounded corners and clips overflow
+                  try {
+                    const dom = editor.getDomNode && editor.getDomNode();
+                    if (dom) {
+                      dom.style.borderRadius = '0.5rem';
+                      dom.style.overflow = 'hidden';
+                      dom.style.boxSizing = 'border-box';
+                    }
+                  } catch (e) { /* ignore */ }
           
 
 
@@ -375,4 +476,3 @@ useEffect(() => {
 };
 
 export default RoomPage;
-

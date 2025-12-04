@@ -56,7 +56,7 @@ const CreateRoom = () => {
               <InputCompo fun={""} value={roomCode} placeholder="Room Code" />
               <button
                 onClick={generateRoomCode}
-                className="px-4 py-2 bg-blue-500  rounded-xl hover:bg-blue-600">
+                className="px-4 py-2 bg-blue-500 cursor-pointer rounded-xl hover:bg-blue-600">
                 Generate
               </button>
 
@@ -65,12 +65,12 @@ const CreateRoom = () => {
           <div className="flex justify-end gap-5 mt-6">
             <button
               onClick={handleSubmit}
-              className="px-5 py-2 bg-green-500 text-white rounded-xl shadow hover:bg-green-600 transition">
+              className="px-5 py-2 bg-green-500 text-white cursor-pointer rounded-xl shadow hover:bg-green-600 transition">
               Create Room
             </button>
           
             <Link to="/">
-              <button className="px-5 py-2 bg-gray-200 text-gray-700 rounded-xl hover:bg-gray-300 transition">
+              <button className="px-5 py-2 bg-gray-200 text-gray-700 rounded-xl cursor-pointer hover:bg-gray-300 transition">
                 Cancel
               </button>
             </Link>
