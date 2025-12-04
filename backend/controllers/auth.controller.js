@@ -106,5 +106,21 @@ export const meController = async (req, res) => {
   });
 }
 
+export const deleteAccountController = async (req, res) => {
+  try {
+    const userId = req.user && (req.user.id || req.user._id || req.user.userId);
+    if (!userId) return res.status(400).json({ success: false, message: 'No user id' });
 
+    // remove user document
+    await User.findByIdAndDelete(userId);
+
+    // clear auth cookie
+    res.cookie('token', '', { httpOnly: true, expires: new Date(0), sameSite: 'strict', secure: false });
+
+    return res.json({ success: true, message: 'Account deleted' });
+  } catch (error) {
+    console.error('deleteAccountController error', error);
+    return res.status(500).json({ success: false, message: 'Failed to delete account' });
+  }
+}
 

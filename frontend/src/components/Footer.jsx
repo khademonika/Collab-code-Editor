@@ -107,7 +107,7 @@ export default function Footer() {
         <div className="border-t border-white/10 pt-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-foreground/50 text-sm">
-              © 2024 CollabIDE. All rights reserved.
+              © 2025 CollabIDE. All rights reserved.
             </p>
             <div className="flex items-center gap-6 text-sm text-foreground/60">
               <a href="#privacy" className="hover:text-neon-cyan transition-colors duration-300">Privacy</a>

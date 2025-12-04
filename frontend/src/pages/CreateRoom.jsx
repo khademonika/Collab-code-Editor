@@ -43,21 +43,20 @@ const CreateRoom = () => {
   };
 
   return (
-    // <ProtectedRoute>
-      <div className="min-h-screen home flex justify-center items-center bg-gray-100 px-4">
+    <ProtectedRoute>
+      <div className="min-h-screen join  flex justify-center items-center bg-gray-100 px-4">
         <div className="bg-white shadow-xl rounded-3xl p-8 w-full max-w-md">
           <h1 className="text-2xl font-bold text-gray-800 text-center mb-6">
             Create a Room
           </h1>
-          <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-4 ">
             <InputCompo fun={(e) => setRoomName(e.target.value)} value={roomName} placeholder="Room Name" />
             <InputCompo fun={(e) => setDescription(e.target.value)} value={description} placeholder="Description" />
             <div className="flex gap-2">
               <InputCompo fun={""} value={roomCode} placeholder="Room Code" />
               <button
                 onClick={generateRoomCode}
-                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600"
-              >
+                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600">
                 Generate
               </button>
 
@@ -78,7 +77,7 @@ const CreateRoom = () => {
           </div>
         </div>
       </div>
-    // </ProtectedRoute>
+   </ProtectedRoute>
   );
 };
 

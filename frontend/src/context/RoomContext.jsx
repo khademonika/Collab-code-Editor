@@ -60,17 +60,17 @@ export const RoomProvider = ({ children }) => {
   const [rooms, setRooms] = useState([]);
   const [roomCode, setRoomCode] = useState("");
 
-  // const createRoom = async (roomName, description) => {
-  //   console.log("Using token:", token);   // DEBUG
-  //   const res = await axios.post(
-  //     "/api/room/create-room",
-  //     { roomName, description },
-  //     {
-  //       headers: { Authorization: `Bearer ${token}` }
-  //     }
-  //   );
-  //   return res.data.room;
-  // };
+//   const createRoom = async (roomName, description) => {
+//     console.log("Using token:", token);   // DEBUG
+//     const res = await axios.post(
+//       "/api/room/create-room",
+//       { roomName, description },
+//       {
+//         headers: { Authorization: `Bearer ${token}` }
+//       }
+//     );
+//     return res.data.room;
+//   };
 //   useEffect(() => {
 //   const savedToken = localStorage.getItem("token");
 //   if (savedToken) {
@@ -81,6 +81,8 @@ export const RoomProvider = ({ children }) => {
 const createRoom = async (roomName, description,roomCode) => {
   try {
     console.log("Using token:", token);
+    // if(!token) console.log("Token Missing!");
+// const token = localStorage.getItem("token");
 
     const res = await axios.post(
       "/api/room/create-room",
@@ -91,8 +93,7 @@ const createRoom = async (roomName, description,roomCode) => {
         },
       }
     );
-  //  window.location.href =`/room/${res.data.roomId}`
-
+  //  window.location.href =`/room/${res.data._id}`
     return res.data
   } catch (err) {
     console.error("Create Room Error:", err.response?.data || err.message);

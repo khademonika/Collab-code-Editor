@@ -214,7 +214,7 @@ useEffect(() => {
 
   return (
     <div>
-      <div className="h-screen pt-24 flex flex-col join">
+      <div className="h-screen  flex flex-col join">
         {/* Main Content - Sidebar + Editor */}
         <div className="flex flex-1 overflow-hidden ">
           {/* Sidebar */}
@@ -339,6 +339,7 @@ useEffect(() => {
                   roundedSelection: true,
                   scrollBeyondLastLine: false,
                   automaticLayout: true,
+              
                   padding: { top: 16, bottom: 16 },
                 }}
               />
