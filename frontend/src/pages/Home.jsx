@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import HomeCards from '../components/HomeCards';
 import HomeHeadings from '../components/HomeHeadings';
+import Footer from '../components/Footer';
 export default function CollabIDELanding() {
   const [activeRoom, setActiveRoom] = useState(0);
   const [openFaqId, setOpenFaqId] = useState(null);
@@ -355,6 +356,7 @@ export default function CollabIDELanding() {
           </button>
         </div>
       </section>
+      <Footer/>
     </div>
   );
 }
