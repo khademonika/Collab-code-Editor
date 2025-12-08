@@ -19,7 +19,8 @@ const app = express()
 const PORT = process.env.PORT || 5000
 const server = http.createServer(app);
 app.use(cors({
-  origin: "collab-code-editor-d8kw-1rygdf69y-khademonikas-projects.vercel.app",
+  origin:[ "collab-code-editor-d8kw-1rygdf69y-khademonikas-projects.vercel.app",
+   "http://localhost:5173"],
   methods: "GET,POST,PUT,DELETE",
   credentials: true
 }));
