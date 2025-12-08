@@ -7,7 +7,7 @@ export const SocketProvider = ({ children }) => {
   const socketRef = useRef(null);
 
   if (!socketRef.current) {
-    socketRef.current = io("https://collab-code-editor-1-fut6.onrender.com", { transports:["websocket"] });
+    socketRef.current = io(import.meta.env.VITE_API_URL.replace("https","wss"), { transports:["websocket"], secure: true, });
   }
 
   return (
